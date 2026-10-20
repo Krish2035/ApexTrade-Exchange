@@ -1,17 +1,19 @@
 {
   "name": "apextrade-backend",
   "version": "1.0.0",
-  "description": "ApexTrade Exchange - Ultra High-Performance Order Matching & Double-Entry Ledger Core",
+  "description": "ApexTrade Exchange - Ultra High-Performance Order Matching & Double-Entry Ledger Core with API Gateway",
   "type": "module",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
+    "gateway": "node gateway/gatewayServer.js",
     "dev": "node --watch src/server.js",
     "test": "node --test src/**/*.test.js",
     "benchmark": "node src/core/orderbook/benchmark.js"
   },
   "keywords": [
     "exchange",
+    "api-gateway",
     "matching-engine",
     "orderbook",
     "fintech",
@@ -22,6 +24,7 @@
   "license": "MIT",
   "dependencies": {
     "dotenv": "^16.4.7",
+    "express": "^4.21.2",
     "ws": "^8.18.0"
   }
 }
