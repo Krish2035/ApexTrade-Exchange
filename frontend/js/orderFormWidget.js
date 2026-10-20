@@ -20,12 +20,26 @@ export class OrderFormWidget {
     this.submitBtn = document.getElementById('btn-submit-order');
     this.idempotencyTag = document.getElementById('active-idempotency-key');
 
+    this.leverage = 1;
+    this.marginCollateralDisplay = document.getElementById('margin-collateral-val');
+    this.liqPriceDisplay = document.getElementById('margin-liq-price-val');
+
     this._bindEvents();
     this._refreshIdempotencyKey();
     this._recalcTotal();
   }
 
   _bindEvents() {
+    // Leverage pills
+    document.querySelectorAll('#leverage-pill-group .chip-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#leverage-pill-group .chip-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.leverage = parseInt(btn.getAttribute('data-lev')) || 1;
+        this._recalcTotal();
+      });
+    });
+
     // Buy / Sell Side Buttons
     document.querySelectorAll('.side-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -35,6 +49,7 @@ export class OrderFormWidget {
 
         this.submitBtn.className = `order-submit-btn ${this.side.toLowerCase()}`;
         this.submitBtn.textContent = `${this.side} BTC`;
+        this._recalcTotal();
       });
     });
 
@@ -64,7 +79,7 @@ export class OrderFormWidget {
     this.amountInput.addEventListener('input', () => this._recalcTotal());
 
     // Percentage quick chips
-    document.querySelectorAll('.chip-btn').forEach(chip => {
+    document.querySelectorAll('.percent-slider-chips .chip-btn').forEach(chip => {
       chip.addEventListener('click', () => {
         const pct = parseFloat(chip.getAttribute('data-pct'));
         const userAvailableUsd = 100000;
@@ -80,10 +95,30 @@ export class OrderFormWidget {
   }
 
   _recalcTotal() {
-    const p = parseFloat(this.priceInput.value) || 0;
+    const p = parseFloat(this.priceInput.value) || 64250;
     const a = parseFloat(this.amountInput.value) || 0;
     const total = p * a;
-    this.totalDisplay.textContent = `$${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const collateral = this.leverage > 1 ? (total / this.leverage) : total;
+
+    // Calculate Estimated Liquidation Price for Margin Trading
+    let liqPrice = 0;
+    if (this.leverage > 1) {
+      if (this.side === 'BUY') {
+        liqPrice = p * (1 - (1 / this.leverage) + 0.05);
+      } else {
+        liqPrice = p * (1 + (1 / this.leverage) - 0.05);
+      }
+    }
+
+    if (this.totalDisplay) {
+      this.totalDisplay.textContent = `$${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    if (this.marginCollateralDisplay) {
+      this.marginCollateralDisplay.textContent = `$${collateral.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    if (this.liqPriceDisplay) {
+      this.liqPriceDisplay.textContent = this.leverage > 1 ? `$${Math.max(0, liqPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'N/A (1x Spot)';
+    }
   }
 
   _refreshIdempotencyKey() {

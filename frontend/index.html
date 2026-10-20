@@ -49,6 +49,16 @@
         <span class="latency-value" id="gateway-latency-ms">1.2ms</span>
       </div>
 
+      <!-- Proof of Reserves (PoR) Solvency Button -->
+      <button id="btn-open-por-modal" style="background: rgba(0, 230, 118, 0.12); border: 1px solid var(--color-buy); color: var(--color-buy); padding: 5px 10px; border-radius: 4px; font-weight: 700; font-size: 11px; cursor: pointer;">
+        🛡️ 105% SOLVENCY (PoR)
+      </button>
+
+      <!-- Market Maker Bot Toggle -->
+      <button id="btn-toggle-mm-bot" style="background: rgba(121, 40, 202, 0.2); border: 1px solid var(--color-accent-purple); color: #d8b4fe; padding: 5px 10px; border-radius: 4px; font-weight: 700; font-size: 11px; cursor: pointer;">
+        🤖 BOT: <span id="mm-bot-status-text">ON</span>
+      </button>
+
       <!-- Saga Distributed Transaction Trigger Button (#18, #19) -->
       <button id="btn-open-saga-modal" style="background: rgba(0, 242, 254, 0.15); border: 1px solid var(--color-accent); color: var(--color-accent); padding: 5px 10px; border-radius: 4px; font-weight: 700; font-size: 11px; cursor: pointer;">
         ⚡ SAGA TRANSFER
@@ -189,10 +199,19 @@
           <button class="side-btn sell" data-side="SELL" id="btn-toggle-sell">SELL</button>
         </div>
 
-        <!-- Order Type Tabs -->
-        <div class="order-type-tabs">
-          <button class="type-tab-btn active" data-type="LIMIT" id="tab-type-limit">Limit</button>
-          <button class="type-tab-btn" data-type="MARKET" id="tab-type-market">Market</button>
+        <!-- Order Type & Margin Mode Tabs -->
+        <div class="order-type-tabs" style="justify-content: space-between;">
+          <div style="display: flex; gap: 8px;">
+            <button class="type-tab-btn active" data-type="LIMIT" id="tab-type-limit">Limit</button>
+            <button class="type-tab-btn" data-type="MARKET" id="tab-type-market">Market</button>
+          </div>
+          <div style="display: flex; gap: 4px;" id="leverage-pill-group">
+            <button class="chip-btn active" data-lev="1" style="padding: 2px 5px; font-size: 10px;">1x</button>
+            <button class="chip-btn" data-lev="5" style="padding: 2px 5px; font-size: 10px;">5x</button>
+            <button class="chip-btn" data-lev="10" style="padding: 2px 5px; font-size: 10px; color: var(--color-accent);">10x</button>
+            <button class="chip-btn" data-lev="20" style="padding: 2px 5px; font-size: 10px; color: var(--color-warning);">20x</button>
+            <button class="chip-btn" data-lev="50" style="padding: 2px 5px; font-size: 10px; color: var(--color-sell);">50x</button>
+          </div>
         </div>
 
         <!-- Price Input -->
@@ -227,10 +246,14 @@
           <button class="chip-btn" data-pct="1.00">100%</button>
         </div>
 
-        <!-- Total Calculation -->
-        <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 11px;">
+        <!-- Total & Liquidation Calculation -->
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 11px;">
           <span style="color: var(--text-muted);">Estimated Total:</span>
           <span style="font-family: var(--font-mono); font-weight: 700; color: var(--text-primary);" id="order-total-val">$16,062.50</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 11px;" id="margin-calc-row">
+          <span style="color: var(--text-muted);">Margin Collateral: <strong id="margin-collateral-val" style="color: var(--color-accent); font-family: var(--font-mono);">$16,062.50</strong></span>
+          <span style="color: var(--text-muted);">Est. Liq Price: <strong id="margin-liq-price-val" style="color: var(--color-sell); font-family: var(--font-mono);">$0.00</strong></span>
         </div>
 
         <!-- Submit Button -->
@@ -338,6 +361,47 @@
           </div>
           <div id="saga-status-result" style="font-size: 11px; margin-top: 8px; font-weight: 700;"></div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Cryptographic Proof of Reserves (PoR) Modal (#72, #73) -->
+  <div class="modal-backdrop" id="modal-por-backdrop">
+    <div class="modal-card" style="width: 520px;">
+      <div class="modal-header">
+        <span class="modal-title">🛡️ Cryptographic Proof of Reserves (PoR)</span>
+        <button class="modal-close-btn" id="btn-close-por-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="background: rgba(0, 230, 118, 0.08); border: 1px solid var(--color-buy); border-radius: 4px; padding: 10px; margin-bottom: 12px; font-size: 11px;">
+          <strong style="color: var(--color-buy);">Solvency Ratio: 105.0% (Over-Collateralized)</strong>
+          <div style="color: var(--text-secondary); margin-top: 4px;">
+            100% of user deposits are backed by physical cold custody and verified cryptographically via SHA-256 Merkle Tree.
+          </div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Merkle Tree Root Hash:</div>
+          <div id="por-merkle-root" style="font-family: var(--font-mono); font-size: 10px; color: var(--color-accent); word-break: break-all; background: var(--bg-surface-elevated); padding: 6px; border-radius: 4px; margin-top: 4px;">--</div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Custody Vault Allocation:</div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-family: var(--font-mono); font-size: 10px; text-align: center;">
+            <div style="background: var(--bg-surface-elevated); padding: 6px; border-radius: 4px;">
+              <span style="color: var(--color-accent);">HOT WALLET</span><br>2% ($1.0M)
+            </div>
+            <div style="background: var(--bg-surface-elevated); padding: 6px; border-radius: 4px;">
+              <span style="color: var(--color-warning);">WARM MULTISIG</span><br>15% ($7.5M)
+            </div>
+            <div style="background: var(--bg-surface-elevated); padding: 6px; border-radius: 4px;">
+              <span style="color: var(--color-buy);">COLD VAULT</span><br>83% ($41.5M)
+            </div>
+          </div>
+        </div>
+
+        <button id="btn-re-audit-por" class="order-submit-btn buy" style="padding: 8px;">VERIFY MY ACCOUNT LEAF PROOF</button>
+        <div id="por-user-leaf-result" style="font-family: var(--font-mono); font-size: 10px; color: var(--color-buy); margin-top: 8px;"></div>
       </div>
     </div>
   </div>

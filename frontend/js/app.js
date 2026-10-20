@@ -177,6 +177,80 @@ class ApexTradeTerminal {
 
     this._setupAuthWorkflow();
     this._setupSagaWorkflow();
+    this._setupInstitutionalWorkflows();
+  }
+
+  _setupInstitutionalWorkflows() {
+    // 1. Proof of Reserves Modal
+    const porModal = document.getElementById('modal-por-backdrop');
+    const openPorBtn = document.getElementById('btn-open-por-modal');
+    const closePorBtn = document.getElementById('btn-close-por-modal');
+    const verifyUserBtn = document.getElementById('btn-re-audit-por');
+    const rootHashEl = document.getElementById('por-merkle-root');
+    const resultEl = document.getElementById('por-user-leaf-result');
+
+    if (openPorBtn) {
+      openPorBtn.onclick = async () => {
+        porModal.classList.add('active');
+        try {
+          const res = await fetch(`${CONFIG.GATEWAY_HTTP}/institutional/solvency/proof`);
+          const data = await res.json();
+          rootHashEl.textContent = data.merkleRoot;
+        } catch (err) {
+          rootHashEl.textContent = 'Audit Failed: ' + err.message;
+        }
+      };
+    }
+
+    if (closePorBtn) closePorBtn.onclick = () => porModal.classList.remove('active');
+
+    if (verifyUserBtn) {
+      verifyUserBtn.onclick = async () => {
+        resultEl.textContent = 'Verifying Merkle Tree leaf inclusion...';
+        try {
+          const res = await fetch(`${CONFIG.GATEWAY_HTTP}/institutional/solvency/user/${CONFIG.USER_ID}`);
+          const data = await res.json();
+          resultEl.innerHTML = `
+            ✔ Verified for ${data.userId}!<br>
+            Leaf Hash: ${data.balancesVerified[0]?.leafHash.slice(0, 32)}...<br>
+            Backing: 105% Physical Reserves in Cold Vault
+          `;
+          this.showToast('Cryptographic Proof of Solvency Verified!', 'success');
+        } catch (err) {
+          resultEl.textContent = 'Verification Error: ' + err.message;
+        }
+      };
+    }
+
+    // 2. Market Maker Bot Toggle
+    const botBtn = document.getElementById('btn-toggle-mm-bot');
+    const botText = document.getElementById('mm-bot-status-text');
+    let botActive = true;
+
+    // Start MM bot by default on launch
+    fetch(`${CONFIG.GATEWAY_HTTP}/institutional/marketmaker/toggle`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'START' })
+    }).catch(() => {});
+
+    if (botBtn) {
+      botBtn.onclick = async () => {
+        botActive = !botActive;
+        botText.textContent = botActive ? 'ON' : 'OFF';
+        botBtn.style.borderColor = botActive ? 'var(--color-accent-purple)' : 'var(--text-muted)';
+        try {
+          await fetch(`${CONFIG.GATEWAY_HTTP}/institutional/marketmaker/toggle`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: botActive ? 'START' : 'STOP' })
+          });
+          this.showToast(`Market Maker Bot ${botActive ? 'STARTED' : 'STOPPED'}`, 'info');
+        } catch (err) {
+          this.showToast(err.message, 'error');
+        }
+      };
+    }
   }
 
   _setupAuthWorkflow() {

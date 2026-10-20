@@ -5,6 +5,7 @@ import walletRoutes from './walletRoutes.js';
 import healthRoutes from './healthRoutes.js';
 import authRoutes from './authRoutes.js';
 import sagaRoutes from './sagaRoutes.js';
+import institutionalRoutes from './institutionalRoutes.js';
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use('/sagas', sagaRoutes);
 router.use('/orders', orderRoutes);
 router.use('/market', marketRoutes);
 router.use('/wallets', walletRoutes);
+router.use('/institutional', institutionalRoutes);
 
 export default router;
