@@ -49,10 +49,20 @@
         <span class="latency-value" id="gateway-latency-ms">1.2ms</span>
       </div>
 
+      <!-- Saga Distributed Transaction Trigger Button (#18, #19) -->
+      <button id="btn-open-saga-modal" style="background: rgba(0, 242, 254, 0.15); border: 1px solid var(--color-accent); color: var(--color-accent); padding: 5px 10px; border-radius: 4px; font-weight: 700; font-size: 11px; cursor: pointer;">
+        ⚡ SAGA TRANSFER
+      </button>
+
       <div class="user-balance-pill" id="header-user-balance">
         <span style="font-size: 10px; color: var(--text-muted);">BALANCE:</span>
         <span style="font-family: var(--font-mono); font-weight: 700; color: var(--color-buy);">$100,000.00</span>
       </div>
+
+      <!-- Auth Profile Button (#68, #69, #70) -->
+      <button id="btn-open-auth-modal" style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 5px 12px; border-radius: 20px; font-weight: 600; font-size: 11px; cursor: pointer;">
+        👤 <span id="header-user-label">Sign In</span>
+      </button>
     </div>
   </header>
 
@@ -254,6 +264,83 @@
 
   <!-- 4. Floating Toast Notification Stack -->
   <div class="toast-stack" id="toast-stack"></div>
+
+  <!-- 5. User Authentication Modal (#68, #69, #70) -->
+  <div class="modal-backdrop" id="modal-auth-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="modal-title" id="auth-modal-title">Institutional Account Access</span>
+        <button class="modal-close-btn" id="btn-close-auth-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+          <button id="auth-tab-login" class="tab-nav-btn active" style="flex: 1; text-align: center;">Login</button>
+          <button id="auth-tab-register" class="tab-nav-btn" style="flex: 1; text-align: center;">Register</button>
+        </div>
+        <div class="input-field-group">
+          <label class="field-label">Email Address</label>
+          <div class="field-input-wrapper">
+            <input type="email" id="auth-input-email" placeholder="alice@apextrade.io" value="alice@apextrade.io">
+          </div>
+        </div>
+        <div class="input-field-group">
+          <label class="field-label">Password</label>
+          <div class="field-input-wrapper">
+            <input type="password" id="auth-input-password" placeholder="••••••••" value="Password123!">
+          </div>
+        </div>
+        <button id="btn-submit-auth" class="order-submit-btn buy" style="margin-top: 10px;">SIGN IN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Distributed Saga Transfer Modal (#18, #19, #20) -->
+  <div class="modal-backdrop" id="modal-saga-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="modal-title">Distributed Saga Transfer Coordinator</span>
+        <button class="modal-close-btn" id="btn-close-saga-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+          <button id="saga-tab-withdraw" class="side-btn active buy" style="flex: 1;">Withdrawal Saga</button>
+          <button id="saga-tab-deposit" class="side-btn" style="flex: 1;">Deposit Saga</button>
+        </div>
+
+        <div class="input-field-group">
+          <label class="field-label">Transfer Amount (USD)</label>
+          <div class="field-input-wrapper">
+            <input type="number" id="saga-input-amount" value="5000" step="100">
+            <span class="field-currency">USD</span>
+          </div>
+        </div>
+
+        <div style="margin: 10px 0; display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--color-sell);">
+          <input type="checkbox" id="saga-simulate-fail">
+          <label for="saga-simulate-fail">Simulate External Failure (Test Compensating Rollback)</label>
+        </div>
+
+        <button id="btn-trigger-saga" class="order-submit-btn buy" style="margin-top: 6px;">EXECUTE SAGA</button>
+
+        <!-- Live Step Progression -->
+        <div class="saga-stepper" id="saga-stepper-view" style="display: none;">
+          <div class="saga-step-item" id="step-1-item">
+            <span>1️⃣</span>
+            <span>Step 1: Lock Funds in Double-Entry Ledger</span>
+          </div>
+          <div class="saga-step-item" id="step-2-item">
+            <span>2️⃣</span>
+            <span>Step 2: External Banking Payout Gateway (#11, #13)</span>
+          </div>
+          <div class="saga-step-item" id="step-3-item">
+            <span>3️⃣</span>
+            <span>Step 3: General Ledger Final Settlement</span>
+          </div>
+          <div id="saga-status-result" style="font-size: 11px; margin-top: 8px; font-weight: 700;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Terminal Entry Script -->
   <script type="module" src="/js/app.js"></script>

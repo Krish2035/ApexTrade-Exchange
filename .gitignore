@@ -6,6 +6,7 @@ vendor/
 bin/
 dist/
 build/
+data/
 
 # Environment and Secrets
 .env

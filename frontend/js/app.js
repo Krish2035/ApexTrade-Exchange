@@ -168,8 +168,159 @@ class ApexTradeTerminal {
         document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
         const activePanel = document.getElementById(`tab-${target}`);
         if (activePanel) activePanel.style.display = 'block';
+
+        if (target === 'engine-telemetry') {
+          this._refreshLiveTelemetry();
+        }
       });
     });
+
+    this._setupAuthWorkflow();
+    this._setupSagaWorkflow();
+  }
+
+  _setupAuthWorkflow() {
+    const modal = document.getElementById('modal-auth-backdrop');
+    const openBtn = document.getElementById('btn-open-auth-modal');
+    const closeBtn = document.getElementById('btn-close-auth-modal');
+    const submitBtn = document.getElementById('btn-submit-auth');
+    const emailInput = document.getElementById('auth-input-email');
+    const passInput = document.getElementById('auth-input-password');
+    const tabLogin = document.getElementById('auth-tab-login');
+    const tabRegister = document.getElementById('auth-tab-register');
+    const userLabel = document.getElementById('header-user-label');
+
+    let mode = 'LOGIN';
+
+    if (openBtn) openBtn.onclick = () => modal.classList.add('active');
+    if (closeBtn) closeBtn.onclick = () => modal.classList.remove('active');
+
+    tabLogin.onclick = () => {
+      mode = 'LOGIN';
+      tabLogin.classList.add('active');
+      tabRegister.classList.remove('active');
+      submitBtn.textContent = 'SIGN IN';
+    };
+
+    tabRegister.onclick = () => {
+      mode = 'REGISTER';
+      tabRegister.classList.add('active');
+      tabLogin.classList.remove('active');
+      submitBtn.textContent = 'CREATE ACCOUNT';
+    };
+
+    submitBtn.onclick = async () => {
+      const email = emailInput.value.trim();
+      const password = passInput.value;
+      const endpoint = mode === 'LOGIN' ? `${CONFIG.GATEWAY_HTTP}/auth/login` : `${CONFIG.GATEWAY_HTTP}/auth/register`;
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || data.error);
+
+        localStorage.setItem('apex_access_token', data.accessToken);
+        CONFIG.USER_ID = data.user.id;
+        userLabel.textContent = `${data.user.email} (${data.user.role.toUpperCase()})`;
+        this.showToast(`Authenticated as ${data.user.email}`, 'success');
+        modal.classList.remove('active');
+        this.wallet.fetchBalances();
+      } catch (err) {
+        this.showToast(err.message, 'error');
+      }
+    };
+  }
+
+  _setupSagaWorkflow() {
+    const modal = document.getElementById('modal-saga-backdrop');
+    const openBtn = document.getElementById('btn-open-saga-modal');
+    const closeBtn = document.getElementById('btn-close-saga-modal');
+    const triggerBtn = document.getElementById('btn-trigger-saga');
+    const amountInput = document.getElementById('saga-input-amount');
+    const simulateFail = document.getElementById('saga-simulate-fail');
+    const stepperView = document.getElementById('saga-stepper-view');
+    const s1 = document.getElementById('step-1-item');
+    const s2 = document.getElementById('step-2-item');
+    const s3 = document.getElementById('step-3-item');
+    const statusResult = document.getElementById('saga-status-result');
+
+    if (openBtn) openBtn.onclick = () => modal.classList.add('active');
+    if (closeBtn) closeBtn.onclick = () => modal.classList.remove('active');
+
+    triggerBtn.onclick = async () => {
+      const amount = parseFloat(amountInput.value);
+      if (!amount || amount <= 0) return this.showToast('Invalid transfer amount', 'error');
+
+      stepperView.style.display = 'flex';
+      s1.className = 'saga-step-item executing';
+      s2.className = 'saga-step-item';
+      s3.className = 'saga-step-item';
+      statusResult.textContent = 'Executing Step 1: Reserving funds...';
+      statusResult.style.color = 'var(--color-accent)';
+
+      try {
+        const res = await fetch(`${CONFIG.GATEWAY_HTTP}/sagas/withdraw`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('apex_access_token') || ''}`
+          },
+          body: JSON.stringify({
+            userId: CONFIG.USER_ID,
+            amount,
+            currency: 'USD',
+            simulateFailure: simulateFail.checked
+          })
+        });
+
+        const data = await res.json();
+        const saga = data.saga;
+
+        if (saga.status === 'SUCCESS') {
+          s1.className = 'saga-step-item completed';
+          s2.className = 'saga-step-item completed';
+          s3.className = 'saga-step-item completed';
+          statusResult.textContent = `✔ SAGA COMPLETED: $${amount.toLocaleString()} settled to bank`;
+          statusResult.style.color = 'var(--color-buy)';
+          this.showToast(`Saga ${saga.id} settled successfully!`, 'success');
+        } else if (saga.status === 'COMPENSATED') {
+          s1.className = 'saga-step-item compensated';
+          s2.className = 'saga-step-item compensated';
+          s3.className = 'saga-step-item compensated';
+          statusResult.textContent = `↺ SAGA COMPENSATED: Bank call failed. Funds automatically refunded (#19)`;
+          statusResult.style.color = 'var(--color-sell)';
+          this.showToast(`Saga Rolled Back: Compensating transaction refunded $${amount}`, 'error');
+        }
+
+        this.wallet.fetchBalances();
+      } catch (err) {
+        statusResult.textContent = `Error: ${err.message}`;
+        statusResult.style.color = 'var(--color-sell)';
+      }
+    };
+  }
+
+  async _refreshLiveTelemetry() {
+    const container = document.getElementById('tab-engine-telemetry');
+    if (!container) return;
+
+    try {
+      const res = await fetch(`${CONFIG.GATEWAY_HTTP}/metrics/prometheus`);
+      const text = await res.text();
+      container.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <strong style="color: var(--color-accent);">Prometheus Live Exporter (#58, #61, #63 SLOs)</strong>
+          <span style="font-size: 10px; color: var(--color-buy);">ENDPOINT: /api/v1/metrics/prometheus</span>
+        </div>
+        <pre style="background: var(--bg-surface-elevated); padding: 10px; border-radius: 4px; font-family: var(--font-mono); font-size: 10px; overflow-x: auto; color: #94a3b8; max-height: 140px;">${text}</pre>
+      `;
+    } catch (err) {
+      console.warn('Telemetry fetch error:', err.message);
+    }
   }
 
   showToast(message, type = 'info') {
