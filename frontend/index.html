@@ -5,15 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ApexTrade Exchange | Institutional Real-Time Trading Terminal</title>
   <meta name="description" content="ApexTrade Exchange - Ultra low-latency multi-asset institutional trading terminal and matching engine powered by event-driven distributed architecture.">
-  
+
   <!-- Base URL for asset resolution -->
   <base href="/">
 
-  <!-- Modern Financial Typography -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
   <!-- Terminal Stylesheets -->
   <link rel="stylesheet" href="/css/variables.css">
   <link rel="stylesheet" href="/css/layout.css">
@@ -21,7 +16,9 @@
 </head>
 <body>
 
-  <!-- 1. Header Navigation Bar -->
+  <!-- =====================================================================
+       1. Header Navigation Bar
+       ===================================================================== -->
   <header class="terminal-header" id="terminal-header">
     <div class="brand-section">
       <a href="#" class="logo-badge" id="terminal-logo">
@@ -29,7 +26,7 @@
         <h1 class="logo-text">ApexTrade</h1>
       </a>
       <span class="exchange-tag">PRO TERMINAL</span>
-      
+
       <!-- Market Symbol Selector -->
       <div class="symbol-selector" id="symbol-dropdown-trigger">
         <span class="active-symbol" id="header-active-symbol">BTC-USD</span>
@@ -43,25 +40,35 @@
         <div class="status-dot" id="connection-status-dot"></div>
         <span id="connection-status-text">GATEWAY ONLINE</span>
       </div>
-      
+
       <div class="telemetry-item">
-        <span>RTT / LATENCY:</span>
+        <span>RTT:</span>
         <span class="latency-value" id="gateway-latency-ms">1.2ms</span>
       </div>
 
       <!-- Proof of Reserves (PoR) Solvency Button -->
-      <button id="btn-open-por-modal" style="background: rgba(0, 230, 118, 0.12); border: 1px solid var(--color-buy); color: var(--color-buy); padding: 5px 10px; border-radius: 4px; font-weight: 700; font-size: 11px; cursor: pointer;">
-        🛡️ 105% SOLVENCY (PoR)
+      <button id="btn-open-por-modal" style="background: rgba(0, 230, 118, 0.12); border: 1px solid var(--color-buy); color: var(--color-buy); padding: 4px 9px; border-radius: 4px; font-weight: 700; font-size: 10px; cursor: pointer; white-space:nowrap;">
+        🛡️ 105% PoR
       </button>
 
       <!-- Market Maker Bot Toggle -->
-      <button id="btn-toggle-mm-bot" style="background: rgba(121, 40, 202, 0.2); border: 1px solid var(--color-accent-purple); color: #d8b4fe; padding: 5px 10px; border-radius: 4px; font-weight: 700; font-size: 11px; cursor: pointer;">
+      <button id="btn-toggle-mm-bot" style="background: rgba(121, 40, 202, 0.2); border: 1px solid var(--color-accent-purple); color: #d8b4fe; padding: 4px 9px; border-radius: 4px; font-weight: 700; font-size: 10px; cursor: pointer; white-space:nowrap;">
         🤖 BOT: <span id="mm-bot-status-text">ON</span>
       </button>
 
-      <!-- Saga Distributed Transaction Trigger Button (#18, #19) -->
-      <button id="btn-open-saga-modal" style="background: rgba(0, 242, 254, 0.15); border: 1px solid var(--color-accent); color: var(--color-accent); padding: 5px 10px; border-radius: 4px; font-weight: 700; font-size: 11px; cursor: pointer;">
-        ⚡ SAGA TRANSFER
+      <!-- Saga Distributed Transaction Trigger Button -->
+      <button id="btn-open-saga-modal" style="background: rgba(0, 242, 254, 0.15); border: 1px solid var(--color-accent); color: var(--color-accent); padding: 4px 9px; border-radius: 4px; font-weight: 700; font-size: 10px; cursor: pointer; white-space:nowrap;">
+        ⚡ SAGA
+      </button>
+
+      <!-- Deposit & Withdrawal Rails -->
+      <button id="btn-open-rails-modal" style="background: rgba(255, 171, 0, 0.15); border: 1px solid var(--color-warning); color: var(--color-warning); padding: 4px 10px; border-radius: 4px; font-weight: 700; font-size: 10px; cursor: pointer; white-space:nowrap;">
+        💳 Rails
+      </button>
+
+      <!-- KYC & AML Compliance Status -->
+      <button id="btn-open-kyc-modal" style="background: rgba(0, 242, 254, 0.12); border: 1px solid var(--color-accent); color: var(--color-accent); padding: 4px 10px; border-radius: 4px; font-weight: 700; font-size: 10px; cursor: pointer; white-space:nowrap;">
+        🪪 KYC: <span id="header-kyc-tier-badge">Tier 1</span>
       </button>
 
       <div class="user-balance-pill" id="header-user-balance">
@@ -69,14 +76,16 @@
         <span style="font-family: var(--font-mono); font-weight: 700; color: var(--color-buy);">$100,000.00</span>
       </div>
 
-      <!-- Auth Profile Button (#68, #69, #70) -->
-      <button id="btn-open-auth-modal" style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 5px 12px; border-radius: 20px; font-weight: 600; font-size: 11px; cursor: pointer;">
+      <!-- Auth Profile Button -->
+      <button id="btn-open-auth-modal" style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: 11px; cursor: pointer; white-space:nowrap;">
         👤 <span id="header-user-label">Sign In</span>
       </button>
     </div>
   </header>
 
-  <!-- 2. Market Ticker Metrics Bar -->
+  <!-- =====================================================================
+       2. Market Ticker Metrics Bar
+       ===================================================================== -->
   <section class="market-ticker-bar" id="market-ticker-stats">
     <div class="ticker-metric">
       <span class="metric-label">MARKET PRICE</span>
@@ -104,47 +113,96 @@
     </div>
 
     <div class="ticker-metric">
-      <span class="metric-label">GATEWAY INGRESS</span>
-      <span class="metric-value" style="color: var(--color-accent);" id="ticker-ingress-node">PORT 8080 (PROXIED)</span>
+      <span class="metric-label">FUNDING RATE</span>
+      <span class="metric-value" style="color: var(--color-buy);" id="ticker-funding-rate">+0.0100%</span>
+    </div>
+
+    <div class="ticker-metric">
+      <span class="metric-label">OPEN INTEREST</span>
+      <span class="metric-value" id="ticker-open-interest">$2.14B</span>
+    </div>
+
+    <div class="ticker-metric">
+      <span class="metric-label">GATEWAY</span>
+      <span class="metric-value" style="color: var(--color-accent); font-size:11px;" id="ticker-ingress-node">:8080 PROXIED</span>
     </div>
   </section>
 
-  <!-- 3. Main Multi-Pane Trading Workspace -->
+  <!-- =====================================================================
+       3. Main 5-Pane Trading Workspace
+       ===================================================================== -->
   <main class="trading-workspace" id="trading-main-workspace">
 
-    <!-- Left Column: Candlestick Canvas & Orders Tabs -->
+    <!-- ═══════════════════════════════════════════
+         LEFT SCREENER PANE - Market Watchlist
+         ═══════════════════════════════════════════ -->
+    <section class="screener-pane" id="market-screener-container">
+      <!-- Populated by MarketScreener.js -->
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         CHART + ORDERS PANE
+         ═══════════════════════════════════════════ -->
     <section class="left-pane" id="pane-chart-and-orders">
       <div class="chart-container" id="candlestick-chart-wrapper">
+        <!-- Chart Header: Timeframes + Indicators -->
         <div class="chart-header">
           <div class="timeframe-group">
             <button class="tf-btn active" data-tf="1m">1m</button>
             <button class="tf-btn" data-tf="5m">5m</button>
             <button class="tf-btn" data-tf="15m">15m</button>
             <button class="tf-btn" data-tf="1h">1h</button>
+            <button class="tf-btn" data-tf="4h">4h</button>
             <button class="tf-btn" data-tf="1D">1D</button>
           </div>
-          <div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">
-            ENGINE: 60FPS CANVAS | PRICE-TIME FIFO
+
+          <!-- Technical Indicator Selector -->
+          <div class="indicator-group">
+            <button class="ind-btn active" data-ind="RSI" id="ind-btn-rsi">RSI</button>
+            <button class="ind-btn" data-ind="MACD" id="ind-btn-macd">MACD</button>
+            <button class="ind-btn" data-ind="VOL" id="ind-btn-vol">VOL</button>
+            <button class="ind-btn" data-ind="BB" id="ind-btn-bb">BB</button>
+          </div>
+
+          <div style="font-size: 10px; color: var(--text-muted); font-family: var(--font-mono);">
+            60FPS CANVAS | FIFO ENGINE
           </div>
         </div>
 
+        <!-- Candlestick Canvas -->
         <div class="chart-canvas-wrapper">
           <canvas id="candlestick-canvas"></canvas>
         </div>
+
+        <!-- Indicator Sub-Panel -->
+        <div class="indicator-panel" id="indicator-panel">
+          <canvas id="indicator-canvas"></canvas>
+        </div>
       </div>
 
-      <!-- Bottom Tabs: Open Orders & Balances -->
+      <!-- Bottom Tabs: Positions, Open Orders, Portfolio, Telemetry -->
       <div class="bottom-tabs-pane" id="bottom-orders-history">
         <nav class="tab-nav">
+          <button class="tab-nav-btn" data-tab="positions" id="tab-btn-positions">
+            Positions <span id="pos-tab-badge" style="background:var(--color-accent);color:#000;border-radius:8px;padding:0 5px;font-size:10px;font-weight:800;margin-left:4px;">2</span>
+          </button>
           <button class="tab-nav-btn active" data-tab="open-orders" id="tab-btn-open-orders">Open Orders</button>
-          <button class="tab-nav-btn" data-tab="portfolio" id="tab-btn-portfolio">Portfolio / Wallets</button>
-          <button class="tab-nav-btn" data-tab="engine-telemetry" id="tab-btn-telemetry">Architecture (#111 Telemetry)</button>
+          <button class="tab-nav-btn" data-tab="portfolio" id="tab-btn-portfolio">Portfolio</button>
+          <button class="tab-nav-btn" data-tab="risk" id="tab-btn-risk">Risk Dashboard</button>
+          <button class="tab-nav-btn" data-tab="engine-telemetry" id="tab-btn-telemetry">Architecture</button>
         </nav>
 
         <div class="tab-content">
+          <!-- Positions Panel -->
+          <div class="tab-panel" id="tab-positions" style="display: none;">
+            <div id="positions-tracker-container"></div>
+          </div>
+
           <!-- Open Orders Panel -->
           <div class="tab-panel" id="tab-open-orders">
-            <div id="open-orders-list"></div>
+            <div id="open-orders-list">
+              <div style="color: var(--text-muted); font-size: 11px; padding: 12px 0;">No active resting orders on book.</div>
+            </div>
           </div>
 
           <!-- Portfolio / Wallets Panel -->
@@ -152,23 +210,88 @@
             <div id="wallet-balances-list"></div>
           </div>
 
+          <!-- Risk Dashboard Panel -->
+          <div class="tab-panel" id="tab-risk" style="display: none;">
+            <div class="risk-grid">
+              <div class="risk-card">
+                <div class="risk-card-label">Equity</div>
+                <div class="risk-card-value" style="color:var(--color-buy);">$100,690</div>
+                <div class="risk-card-sub">Net worth after open P&L</div>
+              </div>
+              <div class="risk-card">
+                <div class="risk-card-label">Margin Ratio</div>
+                <div class="risk-card-value" style="color:var(--color-accent);">4.69%</div>
+                <div class="risk-card-sub">Used / Available</div>
+              </div>
+              <div class="risk-card">
+                <div class="risk-card-label">Max Drawdown (24h)</div>
+                <div class="risk-card-value" style="color:var(--color-warning);">-1.23%</div>
+                <div class="risk-card-sub">Intraday low watermark</div>
+              </div>
+              <div class="risk-card">
+                <div class="risk-card-label">VaR (95%, 1-day)</div>
+                <div class="risk-card-value" style="color:var(--color-sell);">-$2,140</div>
+                <div class="risk-card-sub">Value at Risk estimate</div>
+              </div>
+              <div class="risk-card">
+                <div class="risk-card-label">Sharpe Ratio</div>
+                <div class="risk-card-value">1.84</div>
+                <div class="risk-card-sub">Risk-adjusted return</div>
+              </div>
+              <div class="risk-card">
+                <div class="risk-card-label">Positions Count</div>
+                <div class="risk-card-value" style="color:var(--color-accent);">2</div>
+                <div class="risk-card-sub">Active leveraged positions</div>
+              </div>
+            </div>
+          </div>
+
           <!-- Engine Telemetry Panel -->
-          <div class="tab-panel" id="tab-engine-telemetry" style="display: none; font-size: 11px; color: var(--text-secondary); line-height: 1.6;">
-            <div><strong>#1 Rate Limiting:</strong> Enforced at Gateway (300 req/min sliding window).</div>
-            <div><strong>#4 Reverse Proxy & #5 API Gateway:</strong> Reverse-proxying from :8080 to :4000 (REST) and :4001 (WS).</div>
-            <div><strong>#14 Idempotency:</strong> Active via UUID header caching and in-flight lock deduplication.</div>
-            <div><strong>#38 Distributed Locks:</strong> Redlock pattern with mutex around balance mutations.</div>
-            <div><strong>#91 Throughput & Latency:</strong> Matching Engine tested at 154,200 orders/sec with P50: 2.7µs.</div>
+          <div class="tab-panel" id="tab-engine-telemetry" style="display: none;">
+            <div class="telemetry-grid" id="live-telemetry-grid">
+              <div class="telemetry-card">
+                <div class="telemetry-card-metric" id="tel-throughput">154,200</div>
+                <div class="telemetry-card-label">Orders/sec</div>
+              </div>
+              <div class="telemetry-card">
+                <div class="telemetry-card-metric" id="tel-latency-p50">2.7µs</div>
+                <div class="telemetry-card-label">P50 Latency</div>
+              </div>
+              <div class="telemetry-card">
+                <div class="telemetry-card-metric" id="tel-latency-p99">18µs</div>
+                <div class="telemetry-card-label">P99 Latency</div>
+              </div>
+              <div class="telemetry-card">
+                <div class="telemetry-card-metric" id="tel-ws-connections">847</div>
+                <div class="telemetry-card-label">WS Clients</div>
+              </div>
+              <div class="telemetry-card">
+                <div class="telemetry-card-metric" id="tel-cache-hit">99.2%</div>
+                <div class="telemetry-card-label">Cache Hit Rate</div>
+              </div>
+              <div class="telemetry-card">
+                <div class="telemetry-card-metric" id="tel-rate-limit">0/300</div>
+                <div class="telemetry-card-label">Rate Limit (req/min)</div>
+              </div>
+            </div>
+            <div style="margin-top:10px;font-size:10px;color:var(--text-muted);line-height:1.8;">
+              <strong style="color:var(--text-secondary);">#1 Rate Limiting:</strong> 300 req/min sliding window at Gateway.
+              <strong style="color:var(--text-secondary);">#14 Idempotency:</strong> UUID header + in-flight lock dedup.
+              <strong style="color:var(--text-secondary);">#38 Dist. Locks:</strong> Redlock pattern around balance mutations.
+              <strong style="color:var(--text-secondary);">#18/#19 Saga:</strong> Choreography-based distributed saga with compensations.
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Middle Column: Visual L2 Order Book Depth Ladder -->
+    <!-- ═══════════════════════════════════════════
+         MIDDLE PANE - L2 Order Book Depth Ladder
+         ═══════════════════════════════════════════ -->
     <section class="middle-pane" id="orderbook-container">
       <div class="orderbook-header">
-        <span>Order Book (L2 Depth)</span>
-        <span style="font-size: 10px; color: var(--color-accent);">REAL-TIME WS</span>
+        <span>Order Book (L2)</span>
+        <span style="font-size: 10px; color: var(--color-accent);">● REAL-TIME WS</span>
       </div>
 
       <div class="orderbook-columns">
@@ -178,34 +301,37 @@
       </div>
 
       <div class="orderbook-ladder">
-        <!-- Asks (Red Sell Orders) -->
+        <!-- Asks (Sell Orders) -->
         <div class="ladder-asks" id="book-asks"></div>
 
         <!-- Mid-Market Spread Indicator -->
         <div class="spread-banner" id="book-spread-banner"></div>
 
-        <!-- Bids (Green Buy Orders) -->
+        <!-- Bids (Buy Orders) -->
         <div class="ladder-bids" id="book-bids"></div>
       </div>
     </section>
 
-    <!-- Right Column: Order Placement & Executed Trades Feed -->
+    <!-- ═══════════════════════════════════════════
+         RIGHT PANE - Order Entry + Recent Trades
+         ═══════════════════════════════════════════ -->
     <aside class="right-pane" id="order-execution-pane">
       <!-- Order Placement Form -->
       <div class="order-form-container" id="order-entry-form">
         <!-- Side Toggle -->
         <div class="side-toggle-group">
-          <button class="side-btn buy active" data-side="BUY" id="btn-toggle-buy">BUY</button>
-          <button class="side-btn sell" data-side="SELL" id="btn-toggle-sell">SELL</button>
+          <button class="side-btn buy active" data-side="BUY" id="btn-toggle-buy">BUY / LONG</button>
+          <button class="side-btn sell" data-side="SELL" id="btn-toggle-sell">SELL / SHORT</button>
         </div>
 
         <!-- Order Type & Margin Mode Tabs -->
         <div class="order-type-tabs" style="justify-content: space-between;">
-          <div style="display: flex; gap: 8px;">
+          <div style="display: flex; gap: 6px;">
             <button class="type-tab-btn active" data-type="LIMIT" id="tab-type-limit">Limit</button>
             <button class="type-tab-btn" data-type="MARKET" id="tab-type-market">Market</button>
+            <button class="type-tab-btn" data-type="STOP" id="tab-type-stop">Stop</button>
           </div>
-          <div style="display: flex; gap: 4px;" id="leverage-pill-group">
+          <div style="display: flex; gap: 3px;" id="leverage-pill-group">
             <button class="chip-btn active" data-lev="1" style="padding: 2px 5px; font-size: 10px;">1x</button>
             <button class="chip-btn" data-lev="5" style="padding: 2px 5px; font-size: 10px;">5x</button>
             <button class="chip-btn" data-lev="10" style="padding: 2px 5px; font-size: 10px; color: var(--color-accent);">10x</button>
@@ -218,7 +344,7 @@
         <div class="input-field-group" id="price-field-wrapper">
           <div class="field-label">
             <span>Price</span>
-            <span>USD</span>
+            <span style="color:var(--text-muted);">Best Ask: $64,251.50</span>
           </div>
           <div class="field-input-wrapper">
             <input type="number" id="input-order-price" step="0.5" value="64250">
@@ -230,7 +356,7 @@
         <div class="input-field-group">
           <div class="field-label">
             <span>Amount</span>
-            <span>BTC</span>
+            <span style="color:var(--text-muted);">Avail: 1.542 BTC</span>
           </div>
           <div class="field-input-wrapper">
             <input type="number" id="input-order-amount" step="0.01" value="0.25">
@@ -247,22 +373,55 @@
         </div>
 
         <!-- Total & Liquidation Calculation -->
-        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 11px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 11px;">
           <span style="color: var(--text-muted);">Estimated Total:</span>
           <span style="font-family: var(--font-mono); font-weight: 700; color: var(--text-primary);" id="order-total-val">$16,062.50</span>
         </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 11px;" id="margin-calc-row">
-          <span style="color: var(--text-muted);">Margin Collateral: <strong id="margin-collateral-val" style="color: var(--color-accent); font-family: var(--font-mono);">$16,062.50</strong></span>
-          <span style="color: var(--text-muted);">Est. Liq Price: <strong id="margin-liq-price-val" style="color: var(--color-sell); font-family: var(--font-mono);">$0.00</strong></span>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 11px;" id="margin-calc-row">
+          <span style="color: var(--text-muted);">Margin Req:</span>
+          <span style="color: var(--color-accent); font-family: var(--font-mono); font-weight: 700;" id="margin-collateral-val">$16,062.50</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 11px;">
+          <span style="color: var(--text-muted);">Est. Liq. Price:</span>
+          <span style="color: var(--color-sell); font-family: var(--font-mono); font-weight: 700;" id="margin-liq-price-val">N/A (1x Spot)</span>
+        </div>
+
+        <!-- Advanced TP/SL Section -->
+        <div class="advanced-order-section" id="adv-order-section">
+          <div class="advanced-order-header">
+            <span>⚙ Take Profit / Stop Loss</span>
+            <label class="adv-toggle-switch">
+              <input type="checkbox" id="adv-tpsl-toggle">
+              <span class="adv-toggle-slider"></span>
+            </label>
+          </div>
+          <div id="tpsl-fields" style="display:none;">
+            <div class="tp-sl-row">
+              <div class="tp-input-group">
+                <label style="color:var(--color-buy);">Take Profit (USD)</label>
+                <div class="field-input-wrapper">
+                  <input type="number" id="input-take-profit" placeholder="65000" step="10">
+                  <span class="field-currency">USD</span>
+                </div>
+              </div>
+              <div class="tp-input-group">
+                <label style="color:var(--color-sell);">Stop Loss (USD)</label>
+                <div class="field-input-wrapper">
+                  <input type="number" id="input-stop-loss" placeholder="63000" step="10">
+                  <span class="field-currency">USD</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Submit Button -->
-        <button class="order-submit-btn buy" id="btn-submit-order">BUY BTC</button>
+        <button class="order-submit-btn buy" id="btn-submit-order" style="margin-top:10px;">BUY BTC</button>
 
         <!-- Active Idempotency Key Tag -->
         <div class="idempotency-badge">
-          <span>🔒 Idempotency Protected:</span>
-          <span id="active-idempotency-key" style="font-family: var(--font-mono);">--</span>
+          <span>🔒 Idempotency:</span>
+          <span id="active-idempotency-key" style="font-family: var(--font-mono); font-size:10px;">--</span>
         </div>
       </div>
 
@@ -270,12 +429,12 @@
       <div class="recent-trades-container" id="recent-trades-wrapper">
         <div class="trades-header">
           <span>Market Trades</span>
-          <span style="font-size: 10px; color: var(--color-buy);">LIVE TICKER</span>
+          <span style="font-size: 10px; color: var(--color-buy);">● LIVE</span>
         </div>
 
         <div class="trades-columns">
           <span>Price</span>
-          <span>Size</span>
+          <span>Size (BTC)</span>
           <span class="col-right">Time</span>
         </div>
 
@@ -285,10 +444,29 @@
 
   </main>
 
-  <!-- 4. Floating Toast Notification Stack -->
+  <!-- =====================================================================
+       4. Status Bar (Bottom)
+       ===================================================================== -->
+  <footer class="status-bar" id="terminal-status-bar">
+    <span class="status-bar-item ok">● Engine: ONLINE</span>
+    <span class="status-bar-item ok">● Gateway: :8080</span>
+    <span class="status-bar-item ok">● WS: CONNECTED</span>
+    <span class="status-bar-item ok">● DB: PRIMARY</span>
+    <span class="status-bar-item">| Matching Engine: FIFO Price-Time Priority</span>
+    <span class="status-bar-item">| #38 Distributed Locks: Redlock</span>
+    <span class="status-bar-item">| #14 Idempotency: Active</span>
+    <span class="status-bar-item warn">| TLS: LOCAL (Dev Mode)</span>
+    <span class="status-bar-item" style="margin-left:auto;">v2.0.0 | ApexTrade Exchange</span>
+  </footer>
+
+  <!-- =====================================================================
+       5. Floating Toast Notification Stack
+       ===================================================================== -->
   <div class="toast-stack" id="toast-stack"></div>
 
-  <!-- 5. User Authentication Modal (#68, #69, #70) -->
+  <!-- =====================================================================
+       6. User Authentication Modal
+       ===================================================================== -->
   <div class="modal-backdrop" id="modal-auth-backdrop">
     <div class="modal-card">
       <div class="modal-header">
@@ -312,16 +490,25 @@
             <input type="password" id="auth-input-password" placeholder="••••••••" value="Password123!">
           </div>
         </div>
+        <div style="display:flex;align-items:center;gap:8px;margin:10px 0;font-size:11px;color:var(--text-muted);">
+          <input type="checkbox" id="auth-2fa-check">
+          <label for="auth-2fa-check">Enable 2FA (TOTP)</label>
+        </div>
         <button id="btn-submit-auth" class="order-submit-btn buy" style="margin-top: 10px;">SIGN IN</button>
+        <div style="text-align:center;font-size:10px;color:var(--text-muted);margin-top:10px;">
+          Protected by JWT RS256 · Session expires in 24h
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- 6. Distributed Saga Transfer Modal (#18, #19, #20) -->
+  <!-- =====================================================================
+       7. Distributed Saga Transfer Modal
+       ===================================================================== -->
   <div class="modal-backdrop" id="modal-saga-backdrop">
     <div class="modal-card">
       <div class="modal-header">
-        <span class="modal-title">Distributed Saga Transfer Coordinator</span>
+        <span class="modal-title">⚡ Distributed Saga Transfer Coordinator</span>
         <button class="modal-close-btn" id="btn-close-saga-modal">✕</button>
       </div>
       <div class="modal-body">
@@ -365,7 +552,9 @@
     </div>
   </div>
 
-  <!-- 7. Cryptographic Proof of Reserves (PoR) Modal (#72, #73) -->
+  <!-- =====================================================================
+       8. Cryptographic Proof of Reserves (PoR) Modal
+       ===================================================================== -->
   <div class="modal-backdrop" id="modal-por-backdrop">
     <div class="modal-card" style="width: 520px;">
       <div class="modal-header">
@@ -376,7 +565,7 @@
         <div style="background: rgba(0, 230, 118, 0.08); border: 1px solid var(--color-buy); border-radius: 4px; padding: 10px; margin-bottom: 12px; font-size: 11px;">
           <strong style="color: var(--color-buy);">Solvency Ratio: 105.0% (Over-Collateralized)</strong>
           <div style="color: var(--text-secondary); margin-top: 4px;">
-            100% of user deposits are backed by physical cold custody and verified cryptographically via SHA-256 Merkle Tree.
+            100% of user deposits backed by physical cold custody, verified via SHA-256 Merkle Tree.
           </div>
         </div>
 
@@ -406,7 +595,239 @@
     </div>
   </div>
 
+  <!-- =====================================================================
+       9. TP/SL Position Modal
+       ===================================================================== -->
+  <div class="modal-backdrop" id="modal-tpsl-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="modal-title">⚙ Set Take Profit / Stop Loss</span>
+        <button class="modal-close-btn" id="btn-close-tpsl-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">
+          Configuring risk controls for position <strong id="tpsl-pos-id" style="color:var(--color-accent);">pos-001</strong>
+        </div>
+        <div class="tpsl-slider-group">
+          <div class="tpsl-slider-label">
+            <span style="color:var(--color-buy);">Take Profit</span>
+            <span id="tp-value-display" style="font-family:var(--font-mono);font-weight:700;color:var(--color-buy);">$65,000</span>
+          </div>
+          <input type="range" id="tp-slider" min="64500" max="80000" step="50" value="65000">
+        </div>
+        <div class="tpsl-slider-group">
+          <div class="tpsl-slider-label">
+            <span style="color:var(--color-sell);">Stop Loss</span>
+            <span id="sl-value-display" style="font-family:var(--font-mono);font-weight:700;color:var(--color-sell);">$62,000</span>
+          </div>
+          <input type="range" id="sl-slider" min="40000" max="64000" step="50" value="62000">
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin:12px 0;">
+          <span style="color:var(--text-muted);">Risk/Reward Ratio:</span>
+          <span id="rr-ratio" style="font-weight:700;color:var(--color-accent);">1:3.45</span>
+        </div>
+        <button id="btn-confirm-tpsl" class="order-submit-btn buy">CONFIRM TP/SL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       10. Institutional Deposit & Withdrawal Rails Modal
+       ===================================================================== -->
+  <div class="modal-backdrop" id="modal-rails-backdrop">
+    <div class="modal-card" style="width: 580px; max-height: 85vh; overflow-y: auto;">
+      <div class="modal-header">
+        <span class="modal-title">💳 Institutional Payment Rails & Settlement</span>
+        <button class="modal-close-btn" id="btn-close-rails-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- Rail Subtabs -->
+        <div style="display: flex; gap: 6px; margin-bottom: 14px; background: var(--bg-surface-elevated); padding: 3px; border-radius: 6px;">
+          <button id="rail-tab-stripe" class="side-btn active buy" style="flex: 1; font-size: 11px; padding: 6px;">💳 Stripe (Card/ACH)</button>
+          <button id="rail-tab-crypto" class="side-btn" style="flex: 1; font-size: 11px; padding: 6px;">⛓ Crypto (BTC/ETH)</button>
+          <button id="rail-tab-wire" class="side-btn" style="flex: 1; font-size: 11px; padding: 6px;">🏦 Bank Wire</button>
+          <button id="rail-tab-history" class="side-btn" style="flex: 1; font-size: 11px; padding: 6px;">📜 Ledger Audit</button>
+        </div>
+
+        <!-- 1. Stripe Panel -->
+        <div id="rail-panel-stripe" class="rail-panel">
+          <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid var(--color-accent); border-radius: 4px; padding: 10px; margin-bottom: 12px; font-size: 11px;">
+            <strong style="color: var(--color-accent);">Instant Card & ACH On-Ramp</strong>
+            <div style="color: var(--text-secondary); margin-top: 3px;">
+              Powered by Stripe Webhooks · 1.5% processing fee · Instant credit to persistent ledger (#33)
+            </div>
+          </div>
+          <div class="input-field-group">
+            <label class="field-label">Deposit Amount (USD)</label>
+            <div class="field-input-wrapper">
+              <input type="number" id="stripe-input-amount" value="5000" min="50" step="100">
+              <span class="field-currency">USD</span>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 11px; margin: 8px 0; color: var(--text-muted);">
+            <span>Processing Fee (1.5%):</span>
+            <span id="stripe-fee-preview" style="font-family: var(--font-mono); color: var(--color-warning);">$75.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 12px; font-weight: 700;">
+            <span>Net Credited to Wallet:</span>
+            <span id="stripe-net-preview" style="font-family: var(--font-mono); color: var(--color-buy);">$4,925.00</span>
+          </div>
+          <button id="btn-submit-stripe-deposit" class="order-submit-btn buy">INITIATE STRIPE DEPOSIT</button>
+          <div id="stripe-result-box" style="display: none; margin-top: 10px; padding: 10px; border-radius: 4px; background: var(--bg-surface-elevated); font-size: 11px; font-family: var(--font-mono);"></div>
+        </div>
+
+        <!-- 2. Crypto Panel -->
+        <div id="rail-panel-crypto" class="rail-panel" style="display: none;">
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <select id="crypto-currency-select" style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 6px 10px; border-radius: 4px; font-weight: 700; font-size: 11px;">
+              <option value="BTC">Bitcoin (BTC - SegWit)</option>
+              <option value="ETH">Ethereum (ETH - ERC20)</option>
+              <option value="SOL">Solana (SOL - SPL)</option>
+            </select>
+            <button id="btn-gen-crypto-addr" class="side-btn buy" style="padding: 6px 12px; font-size: 11px;">Refresh Address</button>
+          </div>
+          <div style="background: var(--bg-surface-elevated); border: 1px dashed var(--border-subtle); border-radius: 4px; padding: 12px; margin-bottom: 12px; text-align: center;">
+            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Your Dedicated Cold Custody Deposit Address</div>
+            <div id="crypto-deposit-address" style="font-family: var(--font-mono); font-size: 11px; color: var(--color-accent); word-break: break-all; margin: 6px 0; font-weight: 700;">Loading address...</div>
+            <div style="font-size: 10px; color: var(--text-muted);">Requires 2 on-chain confirmations · Monitored by Mempool Watcher (#15)</div>
+          </div>
+          <div style="border-top: 1px solid var(--border-subtle); padding-top: 10px; margin-top: 10px;">
+            <div style="font-size: 11px; font-weight: 700; margin-bottom: 8px; color: var(--text-secondary);">Simulate Inbound Block Confirmation (Demo):</div>
+            <div style="display: flex; gap: 8px;">
+              <input type="number" id="crypto-sim-amount" value="1.0" step="0.1" style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 6px; border-radius: 4px; width: 100px; font-family: var(--font-mono);">
+              <button id="btn-sim-crypto-deposit" class="order-submit-btn buy" style="margin: 0; flex: 1;">BROADCAST MEMPOOL TX</button>
+            </div>
+            <div id="crypto-sim-status" style="margin-top: 8px; font-size: 11px; font-family: var(--font-mono); color: var(--color-buy);"></div>
+          </div>
+        </div>
+
+        <!-- 3. Wire Panel -->
+        <div id="rail-panel-wire" class="rail-panel" style="display: none;">
+          <div class="input-field-group">
+            <label class="field-label">Withdrawal Amount (USD)</label>
+            <div class="field-input-wrapper">
+              <input type="number" id="wire-input-amount" value="10000" min="100" step="500">
+              <span class="field-currency">USD</span>
+            </div>
+          </div>
+          <div class="input-field-group">
+            <label class="field-label">Recipient Bank / SWIFT BIC</label>
+            <div class="field-input-wrapper">
+              <input type="text" id="wire-bank-swift" value="CHASUS33XXX - JPMorgan Chase NYC" placeholder="Bank SWIFT">
+            </div>
+          </div>
+          <div class="input-field-group">
+            <label class="field-label">Account / IBAN Number</label>
+            <div class="field-input-wrapper">
+              <input type="text" id="wire-bank-iban" value="US64SVBKUS6S3300958879" placeholder="Account Number">
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 11px; margin: 8px 0; color: var(--text-muted);">
+            <span>Fedwire Network Fee:</span>
+            <span style="font-family: var(--font-mono); color: var(--color-warning);">$25.00 flat</span>
+          </div>
+          <button id="btn-submit-wire-payout" class="order-submit-btn sell">DISPATCH WIRE PAYOUT</button>
+          <div id="wire-result-box" style="display: none; margin-top: 10px; padding: 10px; border-radius: 4px; background: var(--bg-surface-elevated); font-size: 11px; font-family: var(--font-mono);"></div>
+        </div>
+
+        <!-- 4. History Panel -->
+        <div id="rail-panel-history" class="rail-panel" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 11px; color: var(--text-muted); font-weight: 700;">PERSISTENT TRANSACTION AUDIT LOG</span>
+            <button id="btn-refresh-tx-history" style="background: none; border: none; color: var(--color-accent); cursor: pointer; font-size: 11px;">🔄 Refresh</button>
+          </div>
+          <div id="tx-history-table-container" style="max-height: 250px; overflow-y: auto; font-family: var(--font-mono); font-size: 10px;">
+            <div style="color: var(--text-muted); padding: 12px 0; text-align: center;">Click refresh to load ledger transactions.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       11. KYC Verification & AML Compliance Modal
+       ===================================================================== -->
+  <div class="modal-backdrop" id="modal-kyc-backdrop">
+    <div class="modal-card" style="width: 540px; max-height: 85vh; overflow-y: auto;">
+      <div class="modal-header">
+        <span class="modal-title">🪪 Know Your Customer (KYC) & AML Engine</span>
+        <button class="modal-close-btn" id="btn-close-kyc-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- Current Tier Card -->
+        <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid var(--color-accent); border-radius: 6px; padding: 12px; margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; font-weight: 700; color: var(--color-accent);">CURRENT COMPLIANCE STATUS</span>
+            <span id="kyc-modal-tier-pill" style="background: rgba(0, 230, 118, 0.15); border: 1px solid var(--color-buy); color: var(--color-buy); padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700;">TIER 1 (BASIC)</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; font-size: 10px; font-family: var(--font-mono);">
+            <div><span style="color: var(--text-muted);">Daily Limit:</span><br><strong id="kyc-limit-daily">$50,000 USD</strong></div>
+            <div><span style="color: var(--text-muted);">AML Score:</span><br><strong id="kyc-aml-score" style="color: var(--color-buy);">0 / 100 (Clear)</strong></div>
+            <div><span style="color: var(--text-muted);">Max Leverage:</span><br><strong id="kyc-max-lev">50x Allowed</strong></div>
+          </div>
+        </div>
+
+        <!-- Verification Form -->
+        <div style="font-size: 11px; font-weight: 700; margin-bottom: 10px; color: var(--text-secondary);">
+          Upgrade to Tier 2 / Tier 3 Institutional Verification:
+        </div>
+        <div class="input-field-group">
+          <label class="field-label">Legal Full Name</label>
+          <div class="field-input-wrapper">
+            <input type="text" id="kyc-input-fullname" value="Alice Sterling" placeholder="First Last">
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="input-field-group">
+            <label class="field-label">Date of Birth</label>
+            <div class="field-input-wrapper">
+              <input type="date" id="kyc-input-dob" value="1992-06-18">
+            </div>
+          </div>
+          <div class="input-field-group">
+            <label class="field-label">Jurisdiction / Country</label>
+            <div class="field-input-wrapper">
+              <select id="kyc-input-country" style="background: transparent; border: none; color: var(--text-primary); width: 100%; font-size: 11px;">
+                <option value="US">United States (US)</option>
+                <option value="GB">United Kingdom (GB)</option>
+                <option value="SG">Singapore (SG)</option>
+                <option value="CH">Switzerland (CH)</option>
+                <option value="AE">United Arab Emirates (AE)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="input-field-group">
+            <label class="field-label">Document Type</label>
+            <div class="field-input-wrapper">
+              <select id="kyc-input-doc-type" style="background: transparent; border: none; color: var(--text-primary); width: 100%; font-size: 11px;">
+                <option value="PASSPORT">Passport (Machine-Readable)</option>
+                <option value="NATIONAL_ID">National Identity Card</option>
+                <option value="DRIVING_LICENSE">Driver's License</option>
+              </select>
+            </div>
+          </div>
+          <div class="input-field-group">
+            <label class="field-label">Document Number</label>
+            <div class="field-input-wrapper">
+              <input type="text" id="kyc-input-doc-number" value="P892019481" placeholder="Passport / ID #">
+            </div>
+          </div>
+        </div>
+
+        <div style="background: rgba(255, 171, 0, 0.08); border: 1px solid var(--color-warning); border-radius: 4px; padding: 8px 10px; margin: 10px 0; font-size: 10px; color: var(--text-secondary);">
+          🛡️ Real-time AML Engine checks: OFAC Sanctions, PEP Blacklists, Mixer Address Derivation, and High-Velocity Structuring.
+        </div>
+
+        <button id="btn-submit-kyc-verification" class="order-submit-btn buy">SUBMIT ENCRYPTED VERIFICATION</button>
+        <div id="kyc-submit-result" style="display: none; margin-top: 10px; padding: 10px; border-radius: 4px; background: var(--bg-surface-elevated); font-size: 11px; font-family: var(--font-mono);"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Terminal Entry Script -->
   <script type="module" src="/js/app.js"></script>
+
 </body>
 </html>

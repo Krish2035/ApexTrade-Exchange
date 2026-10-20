@@ -6,6 +6,8 @@ import healthRoutes from './healthRoutes.js';
 import authRoutes from './authRoutes.js';
 import sagaRoutes from './sagaRoutes.js';
 import institutionalRoutes from './institutionalRoutes.js';
+import paymentRoutes from './paymentRoutes.js';
+import kycRoutes from './kycRoutes.js';
 
 const router = Router();
 
@@ -16,5 +18,7 @@ router.use('/orders', orderRoutes);
 router.use('/market', marketRoutes);
 router.use('/wallets', walletRoutes);
 router.use('/institutional', institutionalRoutes);
+router.use('/payments', paymentRoutes);
+router.use('/kyc', kycRoutes);
 
 export default router;

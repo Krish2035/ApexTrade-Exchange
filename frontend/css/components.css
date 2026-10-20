@@ -515,3 +515,455 @@
   background: rgba(255, 51, 102, 0.08);
 }
 
+/* ==========================================================================
+   6. Market Screener / Watchlist
+   ========================================================================== */
+.screener-header {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.4px;
+  flex-shrink: 0;
+}
+
+.screener-search {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.screener-search input {
+  width: 100%;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 5px 8px;
+  color: var(--text-primary);
+  font-size: 11px;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.screener-search input:focus {
+  border-color: var(--border-focus);
+}
+
+.screener-list {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-subtle) transparent;
+}
+
+.screener-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  gap: 6px;
+}
+
+.screener-row:hover {
+  background: var(--bg-surface-hover);
+}
+
+.screener-row.active {
+  background: rgba(0, 242, 254, 0.07);
+  border-left: 2px solid var(--color-accent);
+}
+
+.screener-coin-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.screener-coin-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg-surface-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.screener-coin-symbol {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.screener-coin-name {
+  font-size: 9px;
+  color: var(--text-muted);
+  line-height: 1.2;
+}
+
+.screener-coin-prices {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.screener-coin-price {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+  line-height: 1.3;
+}
+
+.screener-coin-change {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* ==========================================================================
+   7. Open Positions / P&L Tracker
+   ========================================================================== */
+.positions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 6px;
+}
+
+.position-count-badge {
+  background: var(--color-accent);
+  color: #000;
+  border-radius: 10px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.positions-table {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.positions-table-head {
+  display: grid;
+  grid-template-columns: 80px 90px 70px 80px 80px 90px 80px 110px 100px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.position-row {
+  display: grid;
+  grid-template-columns: 80px 90px 70px 80px 80px 90px 80px 110px 100px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  font-size: 11px;
+  align-items: center;
+  transition: background var(--transition-fast);
+}
+
+.position-row:hover { background: var(--bg-surface-hover); }
+
+.pos-symbol { font-weight: 700; color: var(--text-primary); }
+.pos-data   { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); }
+.pos-pnl    { font-family: var(--font-mono); font-weight: 700; font-size: 11px; }
+
+.side-pill {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.pos-actions { display: flex; gap: 4px; }
+
+.pos-close-btn, .pos-tp-btn {
+  padding: 3px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid;
+  transition: var(--transition-fast);
+}
+
+.pos-close-btn {
+  background: rgba(255,51,102,0.12);
+  border-color: var(--color-sell);
+  color: var(--color-sell);
+}
+
+.pos-close-btn:hover {
+  background: var(--color-sell);
+  color: #fff;
+}
+
+.pos-tp-btn {
+  background: rgba(0,242,254,0.08);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.pos-tp-btn:hover {
+  background: rgba(0,242,254,0.2);
+}
+
+/* Margin Usage Bar */
+.margin-usage-bar-wrapper {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.margin-usage-track {
+  background: var(--bg-surface-elevated);
+  border-radius: 4px;
+  height: 4px;
+  overflow: hidden;
+}
+
+.margin-usage-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-buy), var(--color-accent));
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* ==========================================================================
+   8. Risk Dashboard & Stats Cards
+   ========================================================================== */
+.risk-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.risk-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  transition: var(--transition-fast);
+}
+
+.risk-card:hover {
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+.risk-card-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 4px;
+}
+
+.risk-card-value {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.risk-card-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   9. TP/SL Modal Sliders
+   ========================================================================== */
+.tpsl-slider-group {
+  margin: 10px 0;
+}
+
+.tpsl-slider-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+input[type="range"] {
+  width: 100%;
+  -webkit-appearance: none;
+  background: var(--bg-surface-elevated);
+  height: 4px;
+  border-radius: 4px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--color-accent);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(0,242,254,0.5);
+}
+
+/* ==========================================================================
+   10. Engine Telemetry / Architecture Panel
+   ========================================================================== */
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.telemetry-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.telemetry-card-metric {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-accent);
+}
+
+.telemetry-card-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   11. Status Bar (bottom)
+   ========================================================================== */
+.status-bar {
+  height: 24px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 20px;
+  font-size: 10px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  z-index: 50;
+}
+
+.status-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.status-bar-item.ok   { color: var(--color-buy); }
+.status-bar-item.warn { color: var(--color-warning); }
+.status-bar-item.err  { color: var(--color-sell); }
+
+/* ==========================================================================
+   12. Advanced Order Type: Stop-Loss / Take-Profit Inputs
+   ========================================================================== */
+.advanced-order-section {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-top: 8px;
+}
+
+.advanced-order-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.adv-toggle-switch {
+  position: relative;
+  width: 32px;
+  height: 16px;
+}
+
+.adv-toggle-switch input { display: none; }
+
+.adv-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-surface);
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.adv-toggle-slider::before {
+  content: '';
+  position: absolute;
+  left: 2px; top: 2px;
+  width: 10px; height: 10px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  transition: var(--transition-fast);
+}
+
+.adv-toggle-switch input:checked + .adv-toggle-slider {
+  background: rgba(0, 242, 254, 0.15);
+  border-color: var(--color-accent);
+}
+
+.adv-toggle-switch input:checked + .adv-toggle-slider::before {
+  transform: translateX(16px);
+  background: var(--color-accent);
+}
+
+.tp-sl-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.tp-input-group label {
+  display: block;
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.tp-input-group .field-input-wrapper {
+  background: var(--bg-surface);
+}

@@ -1,4 +1,5 @@
 import { DoubleEntryLedger, Account, DistributedLock } from '../models/index.js';
+import { accountRepository } from '../core/db/AccountRepository.js';
 
 class WalletLedgerService {
   constructor() {
@@ -45,6 +46,44 @@ class WalletLedgerService {
   }
 
   getUserWallets(userId) {
+    // 1. Try SQLite persistent store first (#33 Event Sourcing / WAL)
+    try {
+      let accounts = accountRepository.findByUser(userId);
+      if (!accounts || accounts.length === 0) {
+        // Auto-provision demo accounts in SQLite
+        const defaults = [
+          { cur: 'USD', bal: 150000 },
+          { cur: 'BTC', bal: 12.5 },
+          { cur: 'ETH', bal: 50.0 },
+          { cur: 'SOL', bal: 200.0 }
+        ];
+        for (const { cur, bal } of defaults) {
+          accountRepository.upsertAccount({
+            id: `acc-${userId}-${cur.toLowerCase()}`,
+            userId,
+            currency: cur,
+            type: 'ASSET',
+            initialBalance: bal
+          });
+        }
+        accounts = accountRepository.findByUser(userId);
+      }
+
+      if (accounts && accounts.length > 0) {
+        return accounts.map(acc => ({
+          accountId: acc.id,
+          currency: acc.currency,
+          available: Number(acc.available),
+          locked: Number(acc.locked),
+          total: Number(acc.available) + Number(acc.locked),
+          version: String(acc.version)
+        }));
+      }
+    } catch (err) {
+      console.warn('[WalletLedgerService] SQLite fallback to in-memory ledger:', err.message);
+    }
+
+    // Fallback to in-memory ledger
     const wallets = [];
     for (const [id, acc] of this.ledger.accounts.entries()) {
       if (acc.userId === userId) {

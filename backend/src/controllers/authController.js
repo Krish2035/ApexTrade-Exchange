@@ -1,38 +1,20 @@
-import { authService } from '../core/auth/AuthService.js';
-import { walletLedgerService } from '../services/walletLedgerService.js';
-import { Account } from '../models/index.js';
+import { authServiceV2 } from '../core/auth/AuthServiceV2.js';
+import { userRepository } from '../core/db/UserRepository.js';
 
 export class AuthController {
   static register(req, res, next) {
     try {
-      const { email, password, role = 'trader' } = req.body;
+      const { email, password, role = 'trader', id } = req.body;
       if (!email || !password) {
         return res.status(400).json({ error: 'Email and password are required' });
       }
 
-      const user = authService.register({ email, password, role });
+      const user = authServiceV2.register({ email, password, role, id });
+      const tokens = authServiceV2.login(email, password);
 
-      // Automatically initialize user ledger accounts (USD, BTC, ETH) with starter funds
-      walletLedgerService.ledger.registerAccount(new Account({
-        id: `acc-${user.id}-usd`,
-        userId: user.id,
-        currency: 'USD',
-        type: 'ASSET',
-        initialBalance: 50000 // $50,000 demo trading funds
-      }));
-
-      walletLedgerService.ledger.registerAccount(new Account({
-        id: `acc-${user.id}-btc`,
-        userId: user.id,
-        currency: 'BTC',
-        type: 'ASSET',
-        initialBalance: 5.0 // 5 BTC demo funds
-      }));
-
-      const tokens = authService.generateTokenPair(user);
       return res.status(201).json({
         success: true,
-        message: 'Registration successful',
+        message: 'Persistent registration successful',
         ...tokens
       });
     } catch (err) {
@@ -47,10 +29,10 @@ export class AuthController {
         return res.status(400).json({ error: 'Email and password are required' });
       }
 
-      const tokens = authService.login(email, password);
+      const tokens = authServiceV2.login(email, password);
       return res.json({
         success: true,
-        message: 'Login successful',
+        message: 'Login successful (HS512 JWT + Refresh Token Rotation)',
         ...tokens
       });
     } catch (err) {
@@ -65,9 +47,10 @@ export class AuthController {
         return res.status(400).json({ error: 'refreshToken is required' });
       }
 
-      const tokens = authService.refreshToken(refreshToken);
+      const tokens = authServiceV2.refreshToken(refreshToken);
       return res.json({
         success: true,
+        message: 'Token rotated successfully (#70)',
         ...tokens
       });
     } catch (err) {
@@ -76,17 +59,40 @@ export class AuthController {
   }
 
   static getProfile(req, res) {
+    const user = userRepository.findById(req.user.sub);
     return res.json({
       success: true,
-      user: req.user
+      user: user ? {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        kycStatus: user.kyc_status,
+        kycTier: user.kyc_tier,
+        tokenVersion: user.token_version,
+        createdAt: user.created_at
+      } : req.user
     });
   }
 
   static logout(req, res) {
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
-      authService.revokeToken(authHeader.substring(7));
+      authServiceV2.revokeAccessToken(authHeader.substring(7));
     }
-    return res.json({ success: true, message: 'Logged out successfully' });
+    return res.json({ success: true, message: 'Logged out and token blacklisted successfully' });
+  }
+
+  static changePassword(req, res, next) {
+    try {
+      const { oldPassword, newPassword } = req.body;
+      if (!oldPassword || !newPassword) {
+        return res.status(400).json({ error: 'oldPassword and newPassword are required' });
+      }
+      authServiceV2.changePassword(req.user.sub, oldPassword, newPassword);
+      return res.json({ success: true, message: 'Password updated. All existing sessions invalidated.' });
+    } catch (err) {
+      next(err);
+    }
   }
 }
+

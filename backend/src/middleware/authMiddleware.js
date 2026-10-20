@@ -1,4 +1,4 @@
-import { authService } from '../core/auth/AuthService.js';
+import { authServiceV2 } from '../core/auth/AuthServiceV2.js';
 
 /**
  * authMiddleware.js
@@ -20,7 +20,7 @@ export function authenticate(required = true) {
 
     const token = authHeader.substring(7);
     try {
-      const payload = authService.verifyAccessToken(token);
+      const payload = authServiceV2.verifyAccessToken(token);
       req.user = payload;
       next();
     } catch (err) {

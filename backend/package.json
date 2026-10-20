@@ -23,8 +23,11 @@
   "author": "ApexTrade Engineering",
   "license": "MIT",
   "dependencies": {
+    "better-sqlite3": "^13.0.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "node-forge": "^1.4.0",
+    "stripe": "^23.0.0",
     "ws": "^8.18.0"
   }
 }

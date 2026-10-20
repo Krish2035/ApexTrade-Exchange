@@ -70,7 +70,48 @@ export class ChartEngine {
       lastCandle.low = Math.min(lastCandle.low, trade.price);
       lastCandle.volume += trade.amount;
     }
+
+    // Auto-append new candle every minute
+    const now = Date.now();
+    if (now - lastCandle.time > 60000) {
+      this.candles.push({
+        time: now,
+        open: this.currentPrice,
+        high: this.currentPrice,
+        low: this.currentPrice,
+        close: this.currentPrice,
+        volume: 0
+      });
+      if (this.candles.length > 80) this.candles.shift();
+    }
+
     this.render();
+  }
+
+  /**
+   * Calculate EMA for overlay
+   */
+  _calcEMA(period) {
+    const k = 2 / (period + 1);
+    let ema = this.candles[0].close;
+    return this.candles.map(c => (ema = c.close * k + ema * (1 - k)));
+  }
+
+  /**
+   * Render EMA overlay on chart
+   */
+  _renderEMAOverlay(emaValues, chartW, chartH, minPrice, priceRange, color) {
+    const { ctx } = this;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    emaValues.forEach((v, i) => {
+      const x = i * (chartW / this.candles.length) + (chartW / this.candles.length / 2);
+      const y = chartH - ((v - minPrice) / priceRange) * chartH;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
   }
 
   _bindEvents() {
@@ -166,7 +207,27 @@ export class ChartEngine {
       ctx.fillRect(x - (candleWidth / 2), bodyY, candleWidth, bodyH);
     }
 
-    // 3. Render Current Price Line
+    // 3. Render EMA Overlays (EMA20 in blue, EMA50 in orange)
+    if (this.candles.length >= 20) {
+      this._renderEMAOverlay(this._calcEMA(20), chartWidth, chartHeight, minPrice, priceRange, 'rgba(56, 189, 248, 0.7)');
+    }
+    if (this.candles.length >= 50) {
+      this._renderEMAOverlay(this._calcEMA(50), chartWidth, chartHeight, minPrice, priceRange, 'rgba(249, 115, 22, 0.7)');
+    }
+
+    // EMA Labels
+    if (this.candles.length >= 20) {
+      ctx.fillStyle = 'rgba(56,189,248,0.8)';
+      ctx.font = '9px Calibri, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('EMA20', 6, 14);
+    }
+    if (this.candles.length >= 50) {
+      ctx.fillStyle = 'rgba(249,115,22,0.8)';
+      ctx.fillText('EMA50', 6, 26);
+    }
+
+    // 4. Render Current Price Line
     const currentY = chartHeight - ((this.currentPrice - minPrice) / priceRange) * chartHeight;
     ctx.strokeStyle = '#00f2fe';
     ctx.setLineDash([4, 4]);

@@ -49,11 +49,26 @@ wss.on('connection', (ws) => {
   });
 });
 
+import { authServiceV2 } from './core/auth/AuthServiceV2.js';
+import db from './core/db/database.js';
+
+// Seed default institutional accounts and users in SQLite WAL store
+try {
+  authServiceV2.seedDefaultUsers();
+  console.log(`[Persistence] SQLite WAL database initialized. Schema tables verified.`);
+} catch (err) {
+  console.warn('[Persistence] Seeding warning:', err.message);
+}
+
 httpServer.listen(PORT, () => {
   console.log(`\n======================================================`);
   console.log(`🔥 ApexTrade Core Backend Service Running`);
   console.log(`   Internal REST API : http://127.0.0.1:${PORT}/api/v1`);
   console.log(`   Internal WS Feed  : ws://127.0.0.1:${WS_PORT}`);
+  console.log(`   Persistence Layer : SQLite (WAL mode, crash-safe)`);
+  console.log(`   Auth Engine       : HS512 JWT + Refresh Token Rotation`);
+  console.log(`   Payment Rails     : Stripe, Crypto Mempool, Wire`);
+  console.log(`   Compliance        : Tiered KYC & Real-time AML`);
   console.log(`======================================================\n`);
 });
 
