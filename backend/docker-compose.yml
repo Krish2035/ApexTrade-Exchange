@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # Primary Database (Write master with WAL replication enabled)
+  postgres-primary:
+    image: postgres:16-alpine
+    container_name: apextrade-pg-primary
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: apextrade
+      POSTGRES_USER: apex_admin
+      POSTGRES_PASSWORD: apex_secret_password_change_in_prod
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_primary_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apex_admin -d apextrade"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis Tier (Used for Caching #2, Pub/Sub #16, Distributed Locks #38, Rate Limiting #1)
+  redis:
+    image: redis:7-alpine
+    container_name: apextrade-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "apex_redis_secret"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "apex_redis_secret", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # In-memory Matching Engine & Gateway Service
+  backend-core:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: apextrade-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      WS_PORT: 4001
+      DATABASE_URL: postgres://apex_admin:apex_secret_password_change_in_prod@postgres-primary:5432/apextrade
+      REDIS_URL: redis://:apex_redis_secret@redis:6379
+    ports:
+      - "4000:4000"
+      - "4001:4001"
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  pg_primary_data:
+  redis_data:

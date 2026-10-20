@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Binaries
+bin/
+dist/
+build/
+
+# Environment and Secrets
+.env
+.env.*
+*.pem
+*.key
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

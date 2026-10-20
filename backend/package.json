@@ -1,0 +1,27 @@
+{
+  "name": "apextrade-backend",
+  "version": "1.0.0",
+  "description": "ApexTrade Exchange - Ultra High-Performance Order Matching & Double-Entry Ledger Core",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test src/**/*.test.js",
+    "benchmark": "node src/core/orderbook/benchmark.js"
+  },
+  "keywords": [
+    "exchange",
+    "matching-engine",
+    "orderbook",
+    "fintech",
+    "double-entry-ledger",
+    "distributed-systems"
+  ],
+  "author": "ApexTrade Engineering",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "ws": "^8.18.0"
+  }
+}
