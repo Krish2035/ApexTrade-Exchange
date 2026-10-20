@@ -1,0 +1,412 @@
+/* ==========================================================================
+   ApexTrade Components: OrderBook Ladder, Order Form, Ticker, and Toasts
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. OrderBook Component
+   -------------------------------------------------------------------------- */
+.orderbook-header {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.orderbook-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 6px 12px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-subtle);
+  text-transform: uppercase;
+}
+
+.col-right {
+  text-align: right;
+}
+
+.orderbook-ladder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+  justify-content: space-between;
+}
+
+.ladder-asks, .ladder-bids {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ladder-asks {
+  justify-content: flex-end;
+}
+
+.book-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 3px 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.book-row:hover {
+  background: var(--bg-surface-hover);
+}
+
+.book-row .depth-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+  pointer-events: none;
+  transition: width 0.2s ease-out;
+}
+
+.book-row.ask .depth-bar {
+  background: var(--color-sell-bar);
+}
+
+.book-row.bid .depth-bar {
+  background: var(--color-buy-bar);
+}
+
+.book-row span {
+  position: relative;
+  z-index: 2;
+}
+
+.book-row.ask .price {
+  color: var(--color-sell);
+  font-weight: 600;
+}
+
+.book-row.bid .price {
+  color: var(--color-buy);
+  font-weight: 600;
+}
+
+/* Mid-Market Spread Banner */
+.spread-banner {
+  height: 38px;
+  background: var(--bg-surface-elevated);
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  font-family: var(--font-mono);
+}
+
+.mid-price {
+  font-size: 15px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.spread-info {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   2. Order Form Component
+   -------------------------------------------------------------------------- */
+.order-form-container {
+  padding: 14px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.side-toggle-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.side-btn {
+  padding: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--bg-surface-elevated);
+  color: var(--text-muted);
+  transition: var(--transition-fast);
+}
+
+.side-btn.buy.active {
+  background: var(--color-buy);
+  color: #000;
+  box-shadow: var(--shadow-glow-green);
+}
+
+.side-btn.sell.active {
+  background: var(--color-sell);
+  color: #fff;
+  box-shadow: var(--shadow-glow-red);
+}
+
+.order-type-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 6px;
+}
+
+.type-tab-btn {
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.type-tab-btn.active {
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--color-accent);
+}
+
+.input-field-group {
+  margin-bottom: 10px;
+}
+
+.field-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.field-input-wrapper {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  transition: border-color var(--transition-fast);
+}
+
+.field-input-wrapper:focus-within {
+  border-color: var(--border-focus);
+}
+
+.field-input-wrapper input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  width: 100%;
+}
+
+.field-currency {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+.percent-slider-chips {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.chip-btn {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: var(--transition-fast);
+}
+
+.chip-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-focus);
+}
+
+.order-submit-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: var(--transition-fast);
+}
+
+.order-submit-btn.buy {
+  background: linear-gradient(135deg, var(--color-buy), #00c853);
+  color: #000;
+  box-shadow: 0 4px 14px rgba(0, 230, 118, 0.3);
+}
+
+.order-submit-btn.sell {
+  background: linear-gradient(135deg, var(--color-sell), #e02856);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(255, 51, 102, 0.3);
+}
+
+.order-submit-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+.order-submit-btn:active {
+  transform: translateY(0);
+}
+
+.idempotency-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--color-accent);
+  margin-top: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   3. Recent Trades Feed Component
+   -------------------------------------------------------------------------- */
+.recent-trades-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.trades-header {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.trades-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 6px 12px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-subtle);
+  text-transform: uppercase;
+}
+
+.trades-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.trade-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 4px 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.trade-row.buy .price {
+  color: var(--color-buy);
+}
+
+.trade-row.sell .price {
+  color: var(--color-sell);
+}
+
+.trade-row .time {
+  color: var(--text-muted);
+  text-align: right;
+}
+
+/* --------------------------------------------------------------------------
+   4. Floating Toast Notification Stack
+   -------------------------------------------------------------------------- */
+.toast-stack {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--color-accent);
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slideInToast 0.25s ease-out;
+}
+
+.toast.success {
+  border-left-color: var(--color-buy);
+}
+
+.toast.error {
+  border-left-color: var(--color-sell);
+}
+
+@keyframes slideInToast {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

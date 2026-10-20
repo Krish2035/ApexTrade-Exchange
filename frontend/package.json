@@ -1,0 +1,17 @@
+{
+  "name": "apextrade-frontend",
+  "version": "1.0.0",
+  "description": "ApexTrade Exchange - Real-Time High-Frequency Trading Terminal",
+  "scripts": {
+    "start": "npx -y serve . -p 3000 -s"
+  },
+  "keywords": [
+    "trading-terminal",
+    "orderbook",
+    "web-audio",
+    "canvas-chart",
+    "fintech"
+  ],
+  "author": "ApexTrade Engineering",
+  "license": "MIT"
+}

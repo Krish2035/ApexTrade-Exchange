@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ApexTrade Exchange | Institutional Real-Time Trading Terminal</title>
+  <meta name="description" content="ApexTrade Exchange - Ultra low-latency multi-asset institutional trading terminal and matching engine powered by event-driven distributed architecture.">
+  
+  <!-- Modern Financial Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Terminal Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <!-- 1. Header Navigation Bar -->
+  <header class="terminal-header" id="terminal-header">
+    <div class="brand-section">
+      <a href="#" class="logo-badge" id="terminal-logo">
+        <div class="logo-icon">▲</div>
+        <h1 class="logo-text">ApexTrade</h1>
+      </a>
+      <span class="exchange-tag">PRO TERMINAL</span>
+      
+      <!-- Market Symbol Selector -->
+      <div class="symbol-selector" id="symbol-dropdown-trigger">
+        <span class="active-symbol" id="header-active-symbol">BTC-USD</span>
+        <span style="font-size: 10px; color: var(--text-muted);">▼</span>
+      </div>
+    </div>
+
+    <!-- Telemetry, Latency & Wallet Badges -->
+    <div class="header-telemetry" id="header-telemetry-cluster">
+      <div class="telemetry-item">
+        <div class="status-dot" id="connection-status-dot"></div>
+        <span id="connection-status-text">GATEWAY ONLINE</span>
+      </div>
+      
+      <div class="telemetry-item">
+        <span>RTT / LATENCY:</span>
+        <span class="latency-value" id="gateway-latency-ms">1.2ms</span>
+      </div>
+
+      <div class="user-balance-pill" id="header-user-balance">
+        <span style="font-size: 10px; color: var(--text-muted);">BALANCE:</span>
+        <span style="font-family: var(--font-mono); font-weight: 700; color: var(--color-buy);">$100,000.00</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. Market Ticker Metrics Bar -->
+  <section class="market-ticker-bar" id="market-ticker-stats">
+    <div class="ticker-metric">
+      <span class="metric-label">MARKET PRICE</span>
+      <span class="metric-value price" id="ticker-current-price" style="color: var(--color-buy);">$64,250.00</span>
+    </div>
+
+    <div class="ticker-metric">
+      <span class="metric-label">24H CHANGE</span>
+      <span class="metric-value" style="color: var(--color-buy);" id="ticker-24h-change">+2.45%</span>
+    </div>
+
+    <div class="ticker-metric">
+      <span class="metric-label">24H HIGH</span>
+      <span class="metric-value" id="ticker-24h-high">$64,880.00</span>
+    </div>
+
+    <div class="ticker-metric">
+      <span class="metric-label">24H LOW</span>
+      <span class="metric-value" id="ticker-24h-low">$63,520.00</span>
+    </div>
+
+    <div class="ticker-metric">
+      <span class="metric-label">24H VOLUME</span>
+      <span class="metric-value" id="ticker-24h-vol">4,281.42 BTC</span>
+    </div>
+
+    <div class="ticker-metric">
+      <span class="metric-label">GATEWAY INGRESS</span>
+      <span class="metric-value" style="color: var(--color-accent);" id="ticker-ingress-node">PORT 8080 (PROXIED)</span>
+    </div>
+  </section>
+
+  <!-- 3. Main Multi-Pane Trading Workspace -->
+  <main class="trading-workspace" id="trading-main-workspace">
+
+    <!-- Left Column: Candlestick Canvas & Orders Tabs -->
+    <section class="left-pane" id="pane-chart-and-orders">
+      <div class="chart-container" id="candlestick-chart-wrapper">
+        <div class="chart-header">
+          <div class="timeframe-group">
+            <button class="tf-btn active" data-tf="1m">1m</button>
+            <button class="tf-btn" data-tf="5m">5m</button>
+            <button class="tf-btn" data-tf="15m">15m</button>
+            <button class="tf-btn" data-tf="1h">1h</button>
+            <button class="tf-btn" data-tf="1D">1D</button>
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">
+            ENGINE: 60FPS CANVAS | PRICE-TIME FIFO
+          </div>
+        </div>
+
+        <div class="chart-canvas-wrapper">
+          <canvas id="candlestick-canvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Bottom Tabs: Open Orders & Balances -->
+      <div class="bottom-tabs-pane" id="bottom-orders-history">
+        <nav class="tab-nav">
+          <button class="tab-nav-btn active" data-tab="open-orders" id="tab-btn-open-orders">Open Orders</button>
+          <button class="tab-nav-btn" data-tab="portfolio" id="tab-btn-portfolio">Portfolio / Wallets</button>
+          <button class="tab-nav-btn" data-tab="engine-telemetry" id="tab-btn-telemetry">Architecture (#111 Telemetry)</button>
+        </nav>
+
+        <div class="tab-content">
+          <!-- Open Orders Panel -->
+          <div class="tab-panel" id="tab-open-orders">
+            <div id="open-orders-list"></div>
+          </div>
+
+          <!-- Portfolio / Wallets Panel -->
+          <div class="tab-panel" id="tab-portfolio" style="display: none;">
+            <div id="wallet-balances-list"></div>
+          </div>
+
+          <!-- Engine Telemetry Panel -->
+          <div class="tab-panel" id="tab-engine-telemetry" style="display: none; font-size: 11px; color: var(--text-secondary); line-height: 1.6;">
+            <div><strong>#1 Rate Limiting:</strong> Enforced at Gateway (300 req/min sliding window).</div>
+            <div><strong>#4 Reverse Proxy & #5 API Gateway:</strong> Reverse-proxying from :8080 to :4000 (REST) and :4001 (WS).</div>
+            <div><strong>#14 Idempotency:</strong> Active via UUID header caching and in-flight lock deduplication.</div>
+            <div><strong>#38 Distributed Locks:</strong> Redlock pattern with mutex around balance mutations.</div>
+            <div><strong>#91 Throughput & Latency:</strong> Matching Engine tested at 154,200 orders/sec with P50: 2.7µs.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Middle Column: Visual L2 Order Book Depth Ladder -->
+    <section class="middle-pane" id="orderbook-container">
+      <div class="orderbook-header">
+        <span>Order Book (L2 Depth)</span>
+        <span style="font-size: 10px; color: var(--color-accent);">REAL-TIME WS</span>
+      </div>
+
+      <div class="orderbook-columns">
+        <span>Price (USD)</span>
+        <span>Size (BTC)</span>
+        <span class="col-right">Total (USD)</span>
+      </div>
+
+      <div class="orderbook-ladder">
+        <!-- Asks (Red Sell Orders) -->
+        <div class="ladder-asks" id="book-asks"></div>
+
+        <!-- Mid-Market Spread Indicator -->
+        <div class="spread-banner" id="book-spread-banner"></div>
+
+        <!-- Bids (Green Buy Orders) -->
+        <div class="ladder-bids" id="book-bids"></div>
+      </div>
+    </section>
+
+    <!-- Right Column: Order Placement & Executed Trades Feed -->
+    <aside class="right-pane" id="order-execution-pane">
+      <!-- Order Placement Form -->
+      <div class="order-form-container" id="order-entry-form">
+        <!-- Side Toggle -->
+        <div class="side-toggle-group">
+          <button class="side-btn buy active" data-side="BUY" id="btn-toggle-buy">BUY</button>
+          <button class="side-btn sell" data-side="SELL" id="btn-toggle-sell">SELL</button>
+        </div>
+
+        <!-- Order Type Tabs -->
+        <div class="order-type-tabs">
+          <button class="type-tab-btn active" data-type="LIMIT" id="tab-type-limit">Limit</button>
+          <button class="type-tab-btn" data-type="MARKET" id="tab-type-market">Market</button>
+        </div>
+
+        <!-- Price Input -->
+        <div class="input-field-group" id="price-field-wrapper">
+          <div class="field-label">
+            <span>Price</span>
+            <span>USD</span>
+          </div>
+          <div class="field-input-wrapper">
+            <input type="number" id="input-order-price" step="0.5" value="64250">
+            <span class="field-currency">USD</span>
+          </div>
+        </div>
+
+        <!-- Amount Input -->
+        <div class="input-field-group">
+          <div class="field-label">
+            <span>Amount</span>
+            <span>BTC</span>
+          </div>
+          <div class="field-input-wrapper">
+            <input type="number" id="input-order-amount" step="0.01" value="0.25">
+            <span class="field-currency">BTC</span>
+          </div>
+        </div>
+
+        <!-- Percentage Quick Sliders -->
+        <div class="percent-slider-chips">
+          <button class="chip-btn" data-pct="0.25">25%</button>
+          <button class="chip-btn" data-pct="0.50">50%</button>
+          <button class="chip-btn" data-pct="0.75">75%</button>
+          <button class="chip-btn" data-pct="1.00">100%</button>
+        </div>
+
+        <!-- Total Calculation -->
+        <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 11px;">
+          <span style="color: var(--text-muted);">Estimated Total:</span>
+          <span style="font-family: var(--font-mono); font-weight: 700; color: var(--text-primary);" id="order-total-val">$16,062.50</span>
+        </div>
+
+        <!-- Submit Button -->
+        <button class="order-submit-btn buy" id="btn-submit-order">BUY BTC</button>
+
+        <!-- Active Idempotency Key Tag -->
+        <div class="idempotency-badge">
+          <span>🔒 Idempotency Protected:</span>
+          <span id="active-idempotency-key" style="font-family: var(--font-mono);">--</span>
+        </div>
+      </div>
+
+      <!-- Recent Trades Stream -->
+      <div class="recent-trades-container" id="recent-trades-wrapper">
+        <div class="trades-header">
+          <span>Market Trades</span>
+          <span style="font-size: 10px; color: var(--color-buy);">LIVE TICKER</span>
+        </div>
+
+        <div class="trades-columns">
+          <span>Price</span>
+          <span>Size</span>
+          <span class="col-right">Time</span>
+        </div>
+
+        <div class="trades-list" id="recent-trades-list"></div>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- 4. Floating Toast Notification Stack -->
+  <div class="toast-stack" id="toast-stack"></div>
+
+  <!-- Terminal Entry Script -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
