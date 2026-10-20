@@ -23,6 +23,7 @@ class ApexTradeTerminal {
     this.openOrdersList     = document.getElementById('open-orders-list');
     this.openOrders         = [];
     this.activeIndicator    = 'RSI';
+    this.currentSymbol      = CONFIG.DEFAULT_SYMBOL || 'BTC-USD';
 
     this._init();
   }
@@ -86,6 +87,12 @@ class ApexTradeTerminal {
     this._setupStatusBarUpdater();
     this._setupPaymentRailsWorkflow();
     this._setupKYCWorkflow();
+    this._setupSymbolDropdown();
+
+    // Listen for market selection from Screener or Header Dropdown
+    window.addEventListener('market:selected', (e) => {
+      this.switchMarket(e.detail.symbol);
+    });
 
     // Listen for toast events from child widgets
     window.addEventListener('toast:show', (e) => {
@@ -251,6 +258,7 @@ class ApexTradeTerminal {
   _setupSocketListeners() {
     // Initial Snapshot
     this.socket.on('SNAPSHOT', (data) => {
+      if (data.symbol && data.symbol !== this.currentSymbol) return;
       this.orderBook.update(data.depth);
       if (data.trades) this.tradesTicker.setInitialTrades(data.trades);
       if (data.depth && data.depth.bestAsk) this._updateTickerPrice(data.depth.bestAsk);
@@ -258,18 +266,21 @@ class ApexTradeTerminal {
 
     // OrderBook Depth Updates
     this.socket.on('DEPTH_UPDATE', (data) => {
+      if (data.symbol && data.symbol !== this.currentSymbol) return;
       this.orderBook.update(data.depth);
     });
 
     // Real-Time Trade Executions
     this.socket.on('TRADES_EXECUTED', (data) => {
+      if (data.symbol && data.symbol !== this.currentSymbol) return;
       if (data.trades && data.trades.length > 0) {
         this.tradesTicker.addTrades(data.trades);
         const lastTrade = data.trades[data.trades.length - 1];
         this._updateTickerPrice(lastTrade.price);
         this.chart.updateFromTrade(lastTrade);
         this.indicators.render(this.chart.candles, this.activeIndicator);
-        this.showToast(`⚡ Match: ${lastTrade.amount} BTC @ $${lastTrade.price.toLocaleString()}`, 'success');
+        const base = (data.symbol || this.currentSymbol).replace('-USD', '');
+        this.showToast(`⚡ Match: ${lastTrade.amount} ${base} @ $${Number(lastTrade.price).toLocaleString()}`, 'success');
       }
       if (data.depth) this.orderBook.update(data.depth);
       this.wallet.fetchBalances();
@@ -277,9 +288,128 @@ class ApexTradeTerminal {
   }
 
   // ──────────────────────────────────────────────────
+  // Symbol & Market Switching Coordinator
+  // ──────────────────────────────────────────────────
+  switchMarket(symbol) {
+    if (!symbol) return;
+    this.currentSymbol = symbol;
+    const baseAsset = symbol.replace('-USD', '');
+
+    // 1. Update Header Symbol Label
+    const headerSym = document.getElementById('header-active-symbol');
+    if (headerSym) headerSym.textContent = symbol;
+
+    // 2. Lookup market data from Screener
+    const market = this.screener?.markets?.find(m => m.symbol === symbol) || {
+      symbol,
+      price: symbol.startsWith('ETH') ? 3430.00 : symbol.startsWith('SOL') ? 168.50 : 100,
+      change: 1.5,
+      volume: '1.2B'
+    };
+    const currentPrice = market.price;
+
+    // 3. Update top Ticker Bar
+    this._updateTickerStatsForMarket(market);
+
+    // 4. Update Candlestick Chart & Technical Indicators
+    if (this.chart) {
+      this.chart.setSymbol(symbol, currentPrice);
+      if (this.indicators) {
+        this.indicators.render(this.chart.candles, this.activeIndicator);
+      }
+    }
+
+    // 5. Update Order Book and Trades column headers
+    const sizeHeader = document.getElementById('orderbook-size-header');
+    if (sizeHeader) sizeHeader.textContent = `Size (${baseAsset})`;
+    const tradesHeader = document.getElementById('trades-size-header');
+    if (tradesHeader) tradesHeader.textContent = `Size (${baseAsset})`;
+
+    // 6. Update Order Entry Form
+    if (this.orderForm) {
+      this.orderForm.setSymbol(symbol, currentPrice);
+    }
+
+    // 7. Request fresh WebSocket snapshot for this market
+    if (this.socket) {
+      this.socket.send({ action: 'GET_SNAPSHOT', symbol });
+    }
+
+    this.showToast(`Switched active market to ${symbol}`, 'info');
+  }
+
+  _updateTickerStatsForMarket(market) {
+    const sym = market.symbol;
+    const p = market.price;
+    const isPos = market.change >= 0;
+
+    const formattedPrice = p < 1 ? p.toFixed(4) : p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (this.tickerPrice) this.tickerPrice.textContent = `$${formattedPrice}`;
+
+    const changeEl = document.getElementById('ticker-24h-change');
+    if (changeEl) {
+      changeEl.textContent = `${isPos ? '+' : ''}${market.change.toFixed(2)}%`;
+      changeEl.style.color = isPos ? 'var(--color-buy)' : 'var(--color-sell)';
+    }
+
+    const highEl = document.getElementById('ticker-24h-high');
+    const lowEl = document.getElementById('ticker-24h-low');
+    const volEl = document.getElementById('ticker-24h-vol');
+    const baseAsset = sym.replace('-USD', '');
+
+    if (highEl) {
+      const high = p * 1.025;
+      highEl.textContent = `$${high < 1 ? high.toFixed(4) : high.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    if (lowEl) {
+      const low = p * 0.975;
+      lowEl.textContent = `$${low < 1 ? low.toFixed(4) : low.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    if (volEl) {
+      volEl.textContent = `${market.volume} ${baseAsset}`;
+    }
+  }
+
+  _setupSymbolDropdown() {
+    const trigger = document.getElementById('symbol-dropdown-trigger');
+    const menu = document.getElementById('symbol-dropdown-menu');
+    if (!trigger || !menu) return;
+
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', () => {
+      menu.style.display = 'none';
+    });
+
+    menu.querySelectorAll('.symbol-dropdown-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menu.style.display = 'none';
+        const sym = item.getAttribute('data-sym');
+        if (sym) {
+          // Highlight row in screener
+          if (this.screener) {
+            this.screener.activeSymbol = sym;
+            document.querySelectorAll('.screener-row').forEach(r => {
+              if (r.getAttribute('data-symbol') === sym) r.classList.add('active');
+              else r.classList.remove('active');
+            });
+          }
+          this.switchMarket(sym);
+        }
+      });
+    });
+  }
+
+  // ──────────────────────────────────────────────────
   _updateTickerPrice(price) {
     if (this.tickerPrice) {
-      this.tickerPrice.textContent = `$${Number(price).toLocaleString()}`;
+      const p = Number(price);
+      const formatted = p < 1 ? p.toFixed(4) : p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      this.tickerPrice.textContent = `$${formatted}`;
     }
   }
 

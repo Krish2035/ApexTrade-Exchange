@@ -25,10 +25,35 @@ class MarketDataService {
   }
 
   getRecentTrades(symbol, limit = 50) {
-    return this.recentTrades
-      .filter(t => !symbol || t.symbol === symbol.toUpperCase())
-      .slice(-limit)
-      .reverse();
+    const sym = symbol ? symbol.toUpperCase() : 'BTC-USD';
+    let filtered = this.recentTrades.filter(t => t.symbol === sym);
+
+    if (filtered.length === 0) {
+      // Seed default recent trades for this symbol
+      const prices = {
+        'BTC-USD': 64550, 'ETH-USD': 3430, 'SOL-USD': 168.5, 'BNB-USD': 575,
+        'XRP-USD': 0.5518, 'ADA-USD': 0.49, 'DOGE-USD': 0.1755, 'AVAX-USD': 38.99,
+        'LINK-USD': 14.78, 'UNI-USD': 8.84
+      };
+      const base = prices[sym] || 100;
+      const now = Date.now();
+      for (let i = 10; i >= 1; i--) {
+        const drift = (Math.random() - 0.5) * (base * 0.003);
+        const price = base < 1 ? Number((base + drift).toFixed(4)) : Number((base + drift).toFixed(2));
+        const amount = base > 1000 ? Number((0.1 + Math.random() * 0.5).toFixed(4)) : Number((1 + Math.random() * 20).toFixed(2));
+        filtered.push({
+          id: `seed-trade-${sym}-${i}`,
+          symbol: sym,
+          price,
+          amount,
+          takerSide: Math.random() > 0.5 ? 'BUY' : 'SELL',
+          timestamp: now - (i * 3500)
+        });
+      }
+      this.recentTrades.push(...filtered);
+    }
+
+    return filtered.slice(-limit).reverse();
   }
 
   broadcast(message) {

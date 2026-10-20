@@ -27,10 +27,20 @@
       </a>
       <span class="exchange-tag">PRO TERMINAL</span>
 
-      <!-- Market Symbol Selector -->
-      <div class="symbol-selector" id="symbol-dropdown-trigger">
+      <!-- Market Symbol Selector Dropdown -->
+      <div class="symbol-selector" id="symbol-dropdown-trigger" style="position: relative; cursor: pointer; user-select: none;">
         <span class="active-symbol" id="header-active-symbol">BTC-USD</span>
-        <span style="font-size: 10px; color: var(--text-muted);">▼</span>
+        <span style="font-size: 10px; color: var(--text-muted); margin-left: 4px;">▼</span>
+        <div id="symbol-dropdown-menu" style="display: none; position: absolute; top: calc(100% + 4px); left: 0; background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); z-index: 1000; min-width: 150px; padding: 4px 0;">
+          <div class="symbol-dropdown-item" data-sym="BTC-USD" style="padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between;"><span>₿ BTC-USD</span><span style="color:var(--text-muted);font-weight:400;">Bitcoin</span></div>
+          <div class="symbol-dropdown-item" data-sym="ETH-USD" style="padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between;"><span>Ξ ETH-USD</span><span style="color:var(--text-muted);font-weight:400;">Ethereum</span></div>
+          <div class="symbol-dropdown-item" data-sym="SOL-USD" style="padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between;"><span>◎ SOL-USD</span><span style="color:var(--text-muted);font-weight:400;">Solana</span></div>
+          <div class="symbol-dropdown-item" data-sym="BNB-USD" style="padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between;"><span>B BNB-USD</span><span style="color:var(--text-muted);font-weight:400;">BNB</span></div>
+          <div class="symbol-dropdown-item" data-sym="XRP-USD" style="padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between;"><span>X XRP-USD</span><span style="color:var(--text-muted);font-weight:400;">Ripple</span></div>
+          <div class="symbol-dropdown-item" data-sym="ADA-USD" style="padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between;"><span>A ADA-USD</span><span style="color:var(--text-muted);font-weight:400;">Cardano</span></div>
+          <div class="symbol-dropdown-item" data-sym="DOGE-USD" style="padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between;"><span>Ð DOGE-USD</span><span style="color:var(--text-muted);font-weight:400;">Dogecoin</span></div>
+          <div class="symbol-dropdown-item" data-sym="AVAX-USD" style="padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between;"><span>A AVAX-USD</span><span style="color:var(--text-muted);font-weight:400;">Avalanche</span></div>
+        </div>
       </div>
     </div>
 
@@ -296,7 +306,7 @@
 
       <div class="orderbook-columns">
         <span>Price (USD)</span>
-        <span>Size (BTC)</span>
+        <span id="orderbook-size-header">Size (BTC)</span>
         <span class="col-right">Total (USD)</span>
       </div>
 
@@ -344,7 +354,7 @@
         <div class="input-field-group" id="price-field-wrapper">
           <div class="field-label">
             <span>Price</span>
-            <span style="color:var(--text-muted);">Best Ask: $64,251.50</span>
+            <span style="color:var(--text-muted);" id="order-best-ask-label">Best Ask: $64,251.50</span>
           </div>
           <div class="field-input-wrapper">
             <input type="number" id="input-order-price" step="0.5" value="64250">
@@ -356,11 +366,11 @@
         <div class="input-field-group">
           <div class="field-label">
             <span>Amount</span>
-            <span style="color:var(--text-muted);">Avail: 1.542 BTC</span>
+            <span style="color:var(--text-muted);" id="order-avail-balance">Avail: 5.000 BTC</span>
           </div>
           <div class="field-input-wrapper">
             <input type="number" id="input-order-amount" step="0.01" value="0.25">
-            <span class="field-currency">BTC</span>
+            <span class="field-currency" id="order-amount-currency">BTC</span>
           </div>
         </div>
 
@@ -434,7 +444,7 @@
 
         <div class="trades-columns">
           <span>Price</span>
-          <span>Size (BTC)</span>
+          <span id="trades-size-header">Size (BTC)</span>
           <span class="col-right">Time</span>
         </div>
 

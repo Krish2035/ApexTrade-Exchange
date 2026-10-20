@@ -37,16 +37,17 @@ export class ChartEngine {
     });
   }
 
-  _generateInitialHistory() {
-    let price = 64100;
+  _generateInitialHistory(basePrice = 64250) {
+    let price = basePrice;
     const now = Date.now();
+    const scale = price * 0.0025; // 0.25% volatility per candle
     for (let i = 40; i >= 0; i--) {
       const open = price;
-      const change = (Math.random() - 0.48) * 60;
-      const close = open + change;
-      const high = Math.max(open, close) + Math.random() * 30;
-      const low = Math.min(open, close) - Math.random() * 30;
-      const volume = 2 + Math.random() * 15;
+      const change = (Math.random() - 0.48) * scale;
+      const close = Math.max(0.0001, open + change);
+      const high = Math.max(open, close) + Math.random() * (scale * 0.5);
+      const low = Math.max(0.0001, Math.min(open, close) - Math.random() * (scale * 0.5));
+      const volume = basePrice > 1000 ? (1 + Math.random() * 8) : (50 + Math.random() * 200);
 
       this.candles.push({
         time: now - (i * 60000),
@@ -59,6 +60,13 @@ export class ChartEngine {
       price = close;
     }
     this.currentPrice = price;
+  }
+
+  setSymbol(symbol, basePrice) {
+    this.symbol = symbol;
+    this.candles = [];
+    this._generateInitialHistory(basePrice || 64250);
+    this.render();
   }
 
   updateFromTrade(trade) {
@@ -169,10 +177,11 @@ export class ChartEngine {
       ctx.stroke();
 
       const priceAtY = maxPrice - (priceRange * (y / chartHeight));
+      const formatted = priceAtY < 1 ? priceAtY.toFixed(4) : priceAtY < 10 ? priceAtY.toFixed(3) : priceAtY.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       ctx.fillStyle = '#64748b';
       ctx.font = '11px "Calibri", sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText(priceAtY.toFixed(1), chartWidth + 6, y + 3);
+      ctx.fillText(formatted, chartWidth + 6, y + 3);
     }
 
     // 2. Render Candlesticks and Volume Bars

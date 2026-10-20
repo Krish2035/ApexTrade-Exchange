@@ -48,7 +48,7 @@ export class OrderFormWidget {
         this.side = btn.getAttribute('data-side');
 
         this.submitBtn.className = `order-submit-btn ${this.side.toLowerCase()}`;
-        this.submitBtn.textContent = `${this.side} BTC`;
+        this.submitBtn.textContent = `${this.side} ${this.baseAsset || 'BTC'}`;
         this._recalcTotal();
       });
     });
@@ -133,6 +133,49 @@ export class OrderFormWidget {
       this.priceInput.value = price;
       this._recalcTotal();
     }
+  }
+
+  setSymbol(symbol, currentPrice, userBalance) {
+    this.symbol = symbol;
+    this.baseAsset = symbol.replace('-USD', '');
+
+    // 1. Update Price input
+    if (this.priceInput && this.type !== 'MARKET') {
+      const formatted = currentPrice < 1 ? currentPrice.toFixed(4) : currentPrice.toFixed(2);
+      this.priceInput.value = formatted;
+    }
+
+    // 2. Update Submit button
+    if (this.submitBtn) {
+      this.submitBtn.textContent = `${this.side} ${this.baseAsset}`;
+    }
+
+    // 3. Update currency badges
+    const amtCurrencyBadge = document.getElementById('order-amount-currency');
+    if (amtCurrencyBadge) amtCurrencyBadge.textContent = this.baseAsset;
+
+    const availBadge = document.getElementById('order-avail-balance');
+    if (availBadge) {
+      const balStr = userBalance !== undefined ? `${userBalance} ${this.baseAsset}` : (this.baseAsset === 'BTC' ? '5.000 BTC' : this.baseAsset === 'ETH' ? '25.00 ETH' : this.baseAsset === 'SOL' ? '150.0 SOL' : `1,000 ${this.baseAsset}`);
+      availBadge.textContent = `Avail: ${balStr}`;
+    }
+
+    const bestAskLabel = document.getElementById('order-best-ask-label');
+    if (bestAskLabel) {
+      const formatted = currentPrice < 1 ? currentPrice.toFixed(4) : Number(currentPrice).toLocaleString('en-US', { minimumFractionDigits: 2 });
+      bestAskLabel.textContent = `Best Ask: $${formatted}`;
+    }
+
+    // 4. Default amount based on asset price scale
+    if (this.amountInput) {
+      if (currentPrice > 10000) this.amountInput.value = '0.25';
+      else if (currentPrice > 1000) this.amountInput.value = '2.5';
+      else if (currentPrice > 100) this.amountInput.value = '15.0';
+      else if (currentPrice > 10) this.amountInput.value = '50.0';
+      else this.amountInput.value = '1000';
+    }
+
+    this._recalcTotal();
   }
 
   async submitOrder() {
