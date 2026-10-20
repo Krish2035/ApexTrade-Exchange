@@ -1,10 +1,11 @@
 {
   "name": "apextrade-frontend",
   "version": "1.0.0",
+  "private": true,
   "type": "module",
   "description": "ApexTrade Exchange - Real-Time High-Frequency Trading Terminal",
   "scripts": {
-    "start": "node server.js"
+    "dev": "node dev-server.js"
   },
   "keywords": [
     "trading-terminal",
