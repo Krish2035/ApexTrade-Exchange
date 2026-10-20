@@ -1,14 +1,14 @@
 {
   "name": "apextrade-frontend",
   "version": "1.0.0",
+  "type": "module",
   "description": "ApexTrade Exchange - Real-Time High-Frequency Trading Terminal",
   "scripts": {
-    "start": "npx -y serve . -p 3000 -s"
+    "start": "node server.js"
   },
   "keywords": [
     "trading-terminal",
     "orderbook",
-    "web-audio",
     "canvas-chart",
     "fintech"
   ],
