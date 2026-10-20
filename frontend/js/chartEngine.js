@@ -129,7 +129,7 @@ export class ChartEngine {
 
       const priceAtY = maxPrice - (priceRange * (y / chartHeight));
       ctx.fillStyle = '#64748b';
-      ctx.font = '10px "JetBrains Mono"';
+      ctx.font = '11px "Calibri", sans-serif';
       ctx.textAlign = 'left';
       ctx.fillText(priceAtY.toFixed(1), chartWidth + 6, y + 3);
     }
@@ -180,7 +180,7 @@ export class ChartEngine {
     ctx.fillStyle = '#00f2fe';
     ctx.fillRect(chartWidth, currentY - 9, paddingRight, 18);
     ctx.fillStyle = '#000000';
-    ctx.font = 'bold 10px "JetBrains Mono"';
+    ctx.font = 'bold 11px "Calibri", sans-serif';
     ctx.fillText(this.currentPrice.toFixed(2), chartWidth + 6, currentY + 4);
 
     // 4. Render Crosshair if hovering

@@ -2,16 +2,17 @@
    ApexTrade Layout Grid: High-Density Financial Trading Terminal
    ========================================================================== */
 
-* {
+*, input, button, select, textarea {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: 'Calibri', 'Segoe UI', Candara, Optima, Arial, sans-serif;
 }
 
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  font-family: var(--font-sans);
+  font-family: 'Calibri', 'Segoe UI', Candara, Optima, Arial, sans-serif;
   font-size: 13px;
   line-height: 1.4;
   overflow: hidden;
