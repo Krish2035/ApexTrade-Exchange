@@ -5,13 +5,14 @@ import { marketDataService } from './services/marketDataService.js';
 import { matchingEngineService } from './services/matchingEngineService.js';
 
 const PORT = process.env.PORT || 4000;
-const WS_PORT = process.env.WS_PORT || 4001;
+// If WS_PORT is explicitly provided (local dev), bind separately; otherwise attach to same HTTP server (Render / Cloud)
+const WS_PORT = process.env.WS_PORT || null;
 
 // 1. Create Internal HTTP Server
 const httpServer = http.createServer(app);
 
 // 2. Create Internal WebSocket Server
-const wss = new WebSocketServer({ port: WS_PORT });
+const wss = WS_PORT ? new WebSocketServer({ port: WS_PORT }) : new WebSocketServer({ server: httpServer });
 
 wss.on('connection', (ws) => {
   marketDataService.registerClient(ws);
